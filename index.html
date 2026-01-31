@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burnout Rescue Roadmap Tracker</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Save Indicator -->
+  <div id="saveIndicator" class="save-indicator">
+    <span id="saveText">Saved ✓</span>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🌿</div>
+        <div class="logo-text">
+          <div class="logo-title">Beyond Burnout</div>
+          <div class="logo-subtitle">Your Recovery Journey</div>
+        </div>
+      </div>
+      <button class="sidebar-toggle" id="sidebarClose">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 1: Recover Rhythms</div>
+      <a href="#" class="nav-link active" data-step="dashboard">
+        <i data-lucide="home"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-link" data-step="sleep">
+        <i data-lucide="moon"></i>
+        <span>Sleep Sanctuary</span>
+        <span class="nav-progress" id="nav-sleep-progress">0%</span>
+      </a>
+      <a href="#" class="nav-link" data-step="stress">
+        <i data-lucide="wind"></i>
+        <span>Stress Soothers</span>
+        <span class="nav-progress" id="nav-stress-progress">0%</span>
+      </a>
+      <a href="#" class="nav-link" data-step="energy">
+        <i data-lucide="zap"></i>
+        <span>Energy Essentials</span>
+        <span class="nav-progress" id="nav-energy-progress">0%</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 2: Rebuild Resilience</div>
+      <a href="#" class="nav-link" data-step="mindset">
+        <i data-lucide="brain"></i>
+        <span>Mindset Mastery</span>
+        <span class="nav-progress" id="nav-mindset-progress">0%</span>
+      </a>
+      <a href="#" class="nav-link" data-step="movement">
+        <i data-lucide="activity"></i>
+        <span>Movement Momentum</span>
+        <span class="nav-progress" id="nav-movement-progress">0%</span>
+      </a>
+      <a href="#" class="nav-link" data-step="nutrition">
+        <i data-lucide="apple"></i>
+        <span>Nutrition Navigation</span>
+        <span class="nav-progress" id="nav-nutrition-progress">0%</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 3: Reclaim Purpose</div>
+      <a href="#" class="nav-link" data-step="productivity">
+        <i data-lucide="target"></i>
+        <span>Productivity Power</span>
+        <span class="nav-progress" id="nav-productivity-progress">0%</span>
+      </a>
+      <a href="#" class="nav-link" data-step="boundary">
+        <i data-lucide="shield"></i>
+        <span>Boundary & Balance</span>
+        <span class="nav-progress" id="nav-boundary-progress">0%</span>
+      </a>
+      <a href="#" class="nav-link" data-step="purpose">
+        <i data-lucide="compass"></i>
+        <span>Purpose & Resilience</span>
+        <span class="nav-progress" id="nav-purpose-progress">0%</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" id="mobileMenuToggle">
+    <i data-lucide="menu"></i>
+  </button>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" class="step-section active">
+      <div class="section-intro">
+        <h1>Your Recovery Dashboard</h1>
+        <p>Track your progress across all 9 steps of the Burnout Rescue Roadmap</p>
+      </div>
+
+      <!-- Dashboard Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Overall Progress</span>
+            <div class="stat-icon">
+              <i data-lucide="trending-up"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="overall-progress">0%</div>
+          <div class="stat-subtext">across all steps</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="dash-current-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Steps Completed</span>
+            <div class="stat-icon">
+              <i data-lucide="check-circle"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="steps-completed">0/9</div>
+          <div class="stat-subtext">75%+ completion</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Days Active</span>
+            <div class="stat-icon">
+              <i data-lucide="calendar"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="dash-days-active">0</div>
+          <div class="stat-subtext">total tracking days</div>
+        </div>
+      </div>
+
+      <!-- Today's Focus -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Today's Focus</h3>
+          <span class="week-progress">What's left to do</span>
+        </div>
+        
+        <div class="focus-items" id="today-focus-items">
+          <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
+            Start tracking to see your personalized focus items
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase Progress -->
+      <div class="content-header">
+        <h3 style="font-size: 1.6em;">9-Step Progress</h3>
+        <p>Your journey through the Burnout Rescue Roadmap</p>
+      </div>
+
+      <div class="phase-grid">
+        <!-- Phase 1 -->
+        <div class="phase-card">
+          <div class="phase-header">
+            <h4>Phase 1: Recover Rhythms</h4>
+            <span class="phase-progress" id="phase1-progress-text">0%</span>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" id="phase1-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Sleep -->
+        <div class="step-card" onclick="navigateToStep('sleep')">
+          <div class="step-card-icon">
+            <i data-lucide="moon"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Sleep Sanctuary</div>
+            <div class="step-card-description">Reset your body's natural rhythm</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="progress-ring">
+              <div class="progress-text" id="sleep-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stress -->
+        <div class="step-card" onclick="navigateToStep('stress')">
+          <div class="step-card-icon">
+            <i data-lucide="wind"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Stress Soothers</div>
+            <div class="step-card-description">Calm your nervous system</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="progress-ring">
+              <div class="progress-text" id="stress-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Energy -->
+        <div class="step-card" onclick="navigateToStep('energy')">
+          <div class="step-card-icon">
+            <i data-lucide="zap"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Energy Essentials</div>
+            <div class="step-card-description">Stabilize daily energy</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="progress-ring">
+              <div class="progress-text" id="energy-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="phase-card">
+          <div class="phase-header">
+            <h4>Phase 2: Rebuild Resilience</h4>
+            <span class="phase-progress" id="phase2-progress-text">0%</span>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" id="phase2-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Mindset -->
+        <div class="step-card" onclick="navigateToStep('mindset')">
+          <div class="step-card-icon">
+            <i data-lucide="brain"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Mindset Mastery</div>
+            <div class="step-card-description">Reprogram unhelpful thoughts</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="progress-ring">
+              <div class="progress-text" id="mindset-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Movement -->
+        <div class="step-card" onclick="navigateToStep('movement')">
+          <div class="step-card-icon">
+            <i data-lucide="activity"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Movement Momentum</div>
+            <div class="step-card-description">Build physical confidence</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="progress-ring">
+              <div class="progress-text" id="movement-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nutrition -->
+        <div class="step-card" onclick="navigateToStep('nutrition')">
+          <div class="step-card-icon">
+            <i data-lucide="apple"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Nutrition Navigation</div>
+            <div class="step-card-description">Nourish your body simply</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="progress-ring">
+              <div class="progress-text" id="nutrition-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sleep Sanctuary Section -->
+    <section id="sleep-section" class="step-section">
+      <div class="section-intro">
+        <h2>Sleep Sanctuary</h2>
+        <p>Reset your body's natural rhythm by mastering consistent rest, calming your nervous system, and rebuilding the energy foundation for recovery.</p>
+      </div>
+
+      <!-- Sleep Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="sleep-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">This Month</span>
+            <div class="stat-icon">
+              <i data-lucide="bar-chart-3"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="sleep-monthly">0%</div>
+          <div class="stat-subtext">completion rate</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Days</span>
+            <div class="stat-icon">
+              <i data-lucide="calendar-check"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="sleep-total">0</div>
+          <div class="stat-subtext">tracked so far</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Avg Hours</span>
+            <div class="stat-icon">
+              <i data-lucide="clock"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="sleep-avg">0</div>
+          <div class="stat-subtext">per night</div>
+        </div>
+      </div>
+
+      <!-- Today's Sleep Tracker -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Today's Sleep Tracker</h3>
+          <span class="week-progress" id="today-sleep-date">--</span>
+        </div>
+        
+        <div id="today-sleep-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Monthly Calendar -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Monthly Overview</h3>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="btn-icon" onclick="changeSleepMonth(-1)">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <span class="week-progress" id="sleep-calendar-month-label">January 2026</span>
+            <button class="btn-icon" onclick="changeSleepMonth(1)">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div id="sleep-calendar">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Sleep Habit Insights -->
+      <div class="content-header" style="margin-top: 32px;">
+        <h3 style="font-size: 1.6em; font-weight: 900;">Sleep Habit Insights</h3>
+        <p>Track your consistency across each sleep habit</p>
+      </div>
+      
+      <div id="sleep-habit-dashboard">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- Stress Soothers Section -->
+    <section id="stress-section" class="step-section">
+      <div class="section-intro">
+        <h2>Stress Soothers</h2>
+        <p>Regain control of your emotions and focus by learning quick, powerful techniques to calm your nervous system and rewire your stress response.</p>
+      </div>
+
+      <!-- Stress Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Phase</span>
+            <div class="stat-icon">
+              <i data-lucide="layers"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="stress-phase">Days 1-2</div>
+          <div class="stat-subtext">of 14-day program</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Days Complete</span>
+            <div class="stat-icon">
+              <i data-lucide="check-circle"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="stress-days">0/14</div>
+          <div class="stat-subtext">practices logged</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Completion</span>
+            <div class="stat-icon">
+              <i data-lucide="trending-up"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="stress-pct">0%</div>
+          <div class="stat-subtext">overall progress</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="stress-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+      </div>
+
+      <!-- Today's Practice -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Today's Practice</h3>
+          <span class="week-progress" id="today-stress-date">--</span>
+        </div>
+        
+        <div id="today-stress-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- 14-Day Progress View -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">14-Day Journey</h3>
+          <span class="week-progress" id="stress-journey-progress">0/14 Complete</span>
+        </div>
+        
+        <div id="stress-journey-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Victory Milestones -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Victory Milestones</h3>
+          <span class="week-progress" id="stress-milestones">0/5</span>
+        </div>
+        
+        <div class="checklist" id="stress-milestones-list">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Energy Essentials Section -->
+    <section id="energy-section" class="step-section">
+      <div class="section-intro">
+        <h2>Energy Essentials</h2>
+        <p>Stabilize your daily energy through intentional habits that align your caffeine, hydration, and work rhythms with your body's natural cycles.</p>
+      </div>
+
+      <!-- Energy Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="energy-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">This Month</span>
+            <div class="stat-icon">
+              <i data-lucide="bar-chart-3"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="energy-monthly">0%</div>
+          <div class="stat-subtext">completion rate</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Days</span>
+            <div class="stat-icon">
+              <i data-lucide="check"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="energy-total">0</div>
+          <div class="stat-subtext">tracked so far</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Avg Score</span>
+            <div class="stat-icon">
+              <i data-lucide="zap"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="energy-avg">0/3</div>
+          <div class="stat-subtext">habits per day</div>
+        </div>
+      </div>
+
+      <!-- Today's Energy Tracker -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Today's Energy Habits</h3>
+          <span class="week-progress" id="today-energy-date">--</span>
+        </div>
+        
+        <div id="today-energy-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Monthly Calendar View -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Monthly Overview</h3>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="btn-icon" onclick="changeEnergyMonth(-1)">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <span class="week-progress" id="energy-calendar-month-label">January 2026</span>
+            <button class="btn-icon" onclick="changeEnergyMonth(1)">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div id="energy-calendar">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Habit Component Dashboard -->
+      <div class="content-header" style="margin-top: 32px;">
+        <h3 style="font-size: 1.6em; font-weight: 900;">Energy Habit Insights</h3>
+        <p>Track your consistency across each energy habit</p>
+      </div>
+      
+      <div id="energy-habit-dashboard">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- Mindset Mastery Section -->
+    <section id="mindset-section" class="step-section">
+      <div class="section-intro">
+        <h2>Mindset Mastery</h2>
+        <p>Reprogram unhelpful thoughts, strengthen self-belief, and cultivate gratitude so your mindset becomes your greatest tool for progress.</p>
+      </div>
+
+      <!-- Mindset Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Days Journaled</span>
+            <div class="stat-icon">
+              <i data-lucide="book-open"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="mindset-days">0/12</div>
+          <div class="stat-subtext">journal entries</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="mindset-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Reflections</span>
+            <div class="stat-icon">
+              <i data-lucide="lightbulb"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="mindset-reflections">0</div>
+          <div class="stat-subtext">completed</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Completion</span>
+            <div class="stat-icon">
+              <i data-lucide="trending-up"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="mindset-pct">0%</div>
+          <div class="stat-subtext">overall progress</div>
+        </div>
+      </div>
+
+      <!-- Today's Journal Entry -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Daily Mindset Journal</h3>
+          <span class="week-progress" id="today-mindset-date">Day 1 of 12</span>
+        </div>
+        
+        <div id="today-mindset-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Weekly Reflection -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Weekly Mindset Reflection</h3>
+          <span class="week-progress">Transform Your Beliefs</span>
+        </div>
+        
+        <div id="weekly-reflection">
+          <div class="input-field" style="margin-bottom: 16px;">
+            <label>Original thought:</label>
+            <textarea id="mind-orig" placeholder="Choose one journal entry from this week..." oninput="saveMindsetReflection()"></textarea>
+          </div>
+          <div class="input-field" style="margin-bottom: 16px;">
+            <label>Reframed belief (enhancing):</label>
+            <textarea id="mind-reframe" placeholder="Rewrite using an enhancing lens..." oninput="saveMindsetReflection()"></textarea>
+          </div>
+          <div class="input-grid">
+            <div class="input-field">
+              <label>Morning mantra:</label>
+              <input type="text" id="mind-morning" oninput="saveMindsetReflection()">
+            </div>
+            <div class="input-field">
+              <label>Evening mantra:</label>
+              <input type="text" id="mind-evening" oninput="saveMindsetReflection()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Movement Momentum Section -->
+    <section id="movement-section" class="step-section">
+      <div class="section-intro">
+        <h2>Movement Momentum</h2>
+        <p>Build physical and mental momentum through consistent movement, joyful activity, and growing strength that fuels lasting confidence.</p>
+      </div>
+
+      <!-- Movement Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="movement-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Workouts</span>
+            <div class="stat-icon">
+              <i data-lucide="activity"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="movement-total">0</div>
+          <div class="stat-subtext">sessions logged</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">This Week</span>
+            <div class="stat-icon">
+              <i data-lucide="calendar-check"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="movement-week">0</div>
+          <div class="stat-subtext">workouts</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Avg Energy Boost</span>
+            <div class="stat-icon">
+              <i data-lucide="zap"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="movement-avg">+0</div>
+          <div class="stat-subtext">before → after</div>
+        </div>
+      </div>
+
+      <!-- Today's Movement -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Today's Movement</h3>
+          <span class="week-progress" id="today-movement-date">--</span>
+        </div>
+        
+        <div id="today-movement-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Monthly Calendar View -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Monthly Overview</h3>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="btn-icon" onclick="changeMovementMonth(-1)">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <span class="week-progress" id="movement-calendar-month-label">January 2026</span>
+            <button class="btn-icon" onclick="changeMovementMonth(1)">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div id="movement-calendar">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Nutrition Navigation Section -->
+    <section id="nutrition-section" class="step-section">
+      <div class="section-intro">
+        <h2>Nutrition Navigation</h2>
+        <p>Simplify eating into an easy, energizing system that nourishes your body, sharpens your mind, and fits your real life, with no restrictions.</p>
+      </div>
+
+      <!-- Nutrition Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon">
+              <i data-lucide="flame"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="nutrition-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Habits Tracked</span>
+            <div class="stat-icon">
+              <i data-lucide="check-square"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="nutrition-total">0</div>
+          <div class="stat-subtext">total checkmarks</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">This Month</span>
+            <div class="stat-icon">
+              <i data-lucide="bar-chart-3"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="nutrition-monthly">0%</div>
+          <div class="stat-subtext">completion rate</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Completion</span>
+            <div class="stat-icon">
+              <i data-lucide="trending-up"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="nutrition-pct">0%</div>
+          <div class="stat-subtext">overall progress</div>
+        </div>
+      </div>
+
+      <!-- Custom Habits Setup -->
+      <div class="week-card" id="nutrition-setup-card">
+        <div class="week-header">
+          <h3 class="week-title">My Custom Nutrition Habits</h3>
+          <span class="week-progress">Define 3-5 habits</span>
+        </div>
+        
+        <p style="color: var(--text-secondary); margin-bottom: 16px;">Choose the nutrition habits that matter most to you:</p>
+        
+        <div style="display: grid; gap: 12px; margin-bottom: 16px;">
+          <input type="text" id="nutr-h1" placeholder="Habit 1: e.g., Eat protein with every meal" class="input-field" style="padding: 12px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: 'Inter', sans-serif;">
+          <input type="text" id="nutr-h2" placeholder="Habit 2: e.g., Drink 8 glasses of water" class="input-field" style="padding: 12px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: 'Inter', sans-serif;">
+          <input type="text" id="nutr-h3" placeholder="Habit 3: e.g., Eat vegetables with lunch & dinner" class="input-field" style="padding: 12px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: 'Inter', sans-serif;">
+          <input type="text" id="nutr-h4" placeholder="Habit 4 (optional)" class="input-field" style="padding: 12px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: 'Inter', sans-serif;">
+          <input type="text" id="nutr-h5" placeholder="Habit 5 (optional)" class="input-field" style="padding: 12px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: 'Inter', sans-serif;">
+        </div>
+        
+        <button class="btn btn-primary" onclick="generateNutritionTracker()">
+          <i data-lucide="sparkles" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+          Generate My Tracker
+        </button>
+      </div>
+
+      <!-- Today's Nutrition (Hidden until habits are set) -->
+      <div class="week-card" id="nutrition-today-card" style="display: none;">
+        <div class="week-header">
+          <h3 class="week-title">Today's Nutrition</h3>
+          <span class="week-progress" id="today-nutrition-date">--</span>
+        </div>
+        
+        <div id="today-nutrition-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Monthly Calendar View (Hidden until habits are set) -->
+      <div class="week-card" id="nutrition-calendar-card" style="display: none;">
+        <div class="week-header">
+          <h3 class="week-title">Monthly Overview</h3>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="btn-icon" onclick="changeNutritionMonth(-1)">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <span class="week-progress" id="nutrition-calendar-month-label">January 2026</span>
+            <button class="btn-icon" onclick="changeNutritionMonth(1)">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div id="nutrition-calendar">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Habit Dashboard (Hidden until habits are set) -->
+      <div id="nutrition-habit-dashboard-container" style="display: none;">
+        <div class="content-header" style="margin-top: 32px;">
+          <h3 style="font-size: 1.6em; font-weight: 900;">Nutrition Habit Insights</h3>
+          <p>Track your consistency across each nutrition habit</p>
+        </div>
+        
+        <div id="nutrition-habit-dashboard">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
