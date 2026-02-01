@@ -1,5 +1,5 @@
 /* ============================================================================
-   BURNOUT RESCUE ROADMAP - V2.0 MODULAR STYLES
+   BURNOUT RESCUE ROADMAP - V2.0 MODULAR STYLES - POLISHED
    ============================================================================ */
 
 /* CSS Variables */
@@ -35,6 +35,18 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.05em;
   font-weight: 400;
   line-height: 1.2;
+}
+
+/* BOLDER HEADERS - Issue #3 */
+h1, 
+.section-intro h1,
+.section-intro h2 {
+  font-weight: 900 !important;
+}
+
+.step-card-title,
+.week-title {
+  font-weight: 900 !important;
 }
 
 /* ============================================================================
@@ -78,6 +90,7 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--brand-sage);
+  font-weight: 900;
 }
 
 .logo-subtitle {
@@ -485,7 +498,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================================
-   CALENDAR
+   CALENDAR - MOBILE FIXED (Issue #2)
    ============================================================================ */
 
 .calendar-header {
@@ -520,7 +533,8 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid transparent;
-  padding: 8px;
+  padding: 4px;
+  min-width: 0; /* CRITICAL for mobile */
 }
 
 .calendar-day:hover {
@@ -554,13 +568,48 @@ h1, h2, h3, h4, h5, h6 {
 
 .calendar-day-number {
   font-weight: 600;
-  font-size: 0.95em;
+  font-size: 0.85em;
   margin-bottom: 2px;
 }
 
 .calendar-day-indicator {
-  font-size: 0.75em;
+  font-size: 0.7em;
   opacity: 0.9;
+}
+
+/* Mobile Calendar Adjustments - Issue #2 */
+@media (max-width: 768px) {
+  .calendar-day {
+    padding: 2px;
+  }
+  
+  .calendar-day-number {
+    font-size: 0.75em;
+  }
+  
+  .calendar-day-indicator {
+    font-size: 0.65em;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-grid {
+    gap: 2px;
+  }
+  
+  .calendar-day {
+    border-radius: 4px;
+    padding: 2px;
+  }
+  
+  .calendar-day-number {
+    font-size: 0.7em;
+    margin-bottom: 0;
+  }
+  
+  .calendar-day-indicator {
+    font-size: 0.6em;
+  }
 }
 
 /* ============================================================================
@@ -657,7 +706,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================================
-   FOCUS ITEMS
+   FOCUS ITEMS - ICONS INSTEAD OF EMOJIS (Issue #1)
    ============================================================================ */
 
 .focus-items {
@@ -683,9 +732,22 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateX(4px);
 }
 
-.focus-icon {
-  font-size: 2em;
+.focus-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background: #F5F5F5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.focus-icon-wrapper i {
+  width: 28px;
+  height: 28px;
+  color: var(--brand-sage);
+  stroke-width: 2;
 }
 
 .focus-content {
@@ -704,10 +766,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .focus-arrow {
-  font-size: 1.5em;
-  color: var(--brand-sage);
   opacity: 0;
   transition: opacity 0.2s;
+}
+
+.focus-arrow i {
+  width: 24px;
+  height: 24px;
+  color: var(--brand-sage);
+  stroke-width: 2;
 }
 
 .focus-item:hover .focus-arrow {
@@ -740,6 +807,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .phase-header h4 {
   font-size: 1.3em;
+  font-weight: 900;
 }
 
 .phase-progress {
@@ -866,7 +934,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================================
-   CELEBRATIONS
+   CELEBRATIONS - ICONS INSTEAD OF EMOJI (Issue #1)
    ============================================================================ */
 
 .celebration-modal {
@@ -896,8 +964,7 @@ h1, h2, h3, h4, h5, h6 {
   animation: slideUp 0.4s;
 }
 
-.celebration-emoji {
-  font-size: 4em;
+.celebration-icon {
   margin-bottom: 20px;
 }
 
@@ -905,6 +972,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1.8em;
   color: var(--brand-sage);
   margin-bottom: 12px;
+  font-weight: 900;
 }
 
 .celebration-message {

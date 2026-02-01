@@ -1,5 +1,5 @@
 // ============================================================================
-// BURNOUT RESCUE ROADMAP - V2.0 MODULAR JAVASCRIPT
+// BURNOUT RESCUE ROADMAP - V2.0 MODULAR JAVASCRIPT - POLISHED
 // ============================================================================
 
 // Global Constants
@@ -471,6 +471,7 @@ function updatePhaseCard(step, progress) {
   if (navProgress) navProgress.textContent = progressValue + '%';
 }
 
+// UPDATED: Today's Focus with Icons (Issue #1)
 function updateTodaysFocus() {
   const container = document.getElementById('today-focus-items');
   if (!container) return;
@@ -502,7 +503,7 @@ function updateTodaysFocus() {
   if (!sleepComplete) {
     focusItems.push({
       step: 'Sleep Sanctuary',
-      icon: '🌙',
+      icon: 'moon',
       title: 'Log your sleep habits for today',
       link: 'sleep'
     });
@@ -511,7 +512,7 @@ function updateTodaysFocus() {
   if (!stressComplete) {
     focusItems.push({
       step: 'Stress Soothers',
-      icon: '🧘',
+      icon: 'wind',
       title: 'Complete today\'s stress practice',
       link: 'stress'
     });
@@ -520,7 +521,7 @@ function updateTodaysFocus() {
   if (!energyComplete) {
     focusItems.push({
       step: 'Energy Essentials',
-      icon: '⚡',
+      icon: 'zap',
       title: 'Track your energy habits',
       link: 'energy'
     });
@@ -529,7 +530,7 @@ function updateTodaysFocus() {
   if (!mindsetComplete) {
     focusItems.push({
       step: 'Mindset Mastery',
-      icon: '🧠',
+      icon: 'brain',
       title: 'Journal about today\'s mindset',
       link: 'mindset'
     });
@@ -538,7 +539,7 @@ function updateTodaysFocus() {
   if (!movementComplete) {
     focusItems.push({
       step: 'Movement Momentum',
-      icon: '💪',
+      icon: 'activity',
       title: 'Log today\'s movement session',
       link: 'movement'
     });
@@ -547,37 +548,59 @@ function updateTodaysFocus() {
   if (!nutritionComplete && nutritionHabits.length > 0) {
     focusItems.push({
       step: 'Nutrition Navigation',
-      icon: '🥗',
+      icon: 'apple',
       title: 'Check off your nutrition habits',
       link: 'nutrition'
     });
   }
   
-  // If everything is complete, show celebration
+  // If everything is complete, show celebration with icon
   if (focusItems.length === 0) {
     container.innerHTML = `
       <div style="padding: 32px; text-align: center;">
-        <div style="font-size: 4em; margin-bottom: 16px;">🎉</div>
+        <div style="margin-bottom: 16px;">
+          <div class="stat-icon" style="margin: 0 auto; background: var(--brand-sage);">
+            <i data-lucide="check-circle" style="color: white;"></i>
+          </div>
+        </div>
         <div style="font-size: 1.3em; font-weight: 600; color: var(--brand-sage); margin-bottom: 8px;">All Caught Up!</div>
         <div style="color: var(--text-secondary); font-size: 1.05em;">You've completed all your trackers for today. Excellent work!</div>
       </div>
     `;
+    
+    // Refresh icons
+    setTimeout(() => {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }, 50);
   } else {
     container.innerHTML = focusItems.map(item => `
       <div class="focus-item" onclick="navigateToStep('${item.link}')">
-        <div class="focus-icon">${item.icon}</div>
+        <div class="focus-icon-wrapper">
+          <i data-lucide="${item.icon}"></i>
+        </div>
         <div class="focus-content">
           <div class="focus-title">${item.title}</div>
           <div class="focus-step">${item.step}</div>
         </div>
-        <div class="focus-arrow">→</div>
+        <div class="focus-arrow">
+          <i data-lucide="chevron-right"></i>
+        </div>
       </div>
     `).join('');
+    
+    // Refresh icons
+    setTimeout(() => {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }, 50);
   }
 }
 
 // ============================================================================
-// STREAK CALCULATION HELPERS - FIXED
+// STREAK CALCULATION HELPERS
 // ============================================================================
 
 function calculateSleepStreak() {
@@ -684,7 +707,7 @@ function calculateNutritionStreak() {
 }
 
 // ============================================================================
-// CELEBRATION SYSTEM
+// CELEBRATION SYSTEM - UPDATED WITH ICONS (Issue #1)
 // ============================================================================
 
 function showCelebration(title, message) {
@@ -693,7 +716,11 @@ function showCelebration(title, message) {
   modal.className = 'celebration-modal show';
   modal.innerHTML = `
     <div class="celebration-content">
-      <div class="celebration-emoji">🎉</div>
+      <div class="celebration-icon">
+        <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 20px; background: var(--brand-sage);">
+          <i data-lucide="award" style="width: 48px; height: 48px; color: white;"></i>
+        </div>
+      </div>
       <div class="celebration-title">${title}</div>
       <div class="celebration-message">${message}</div>
       <button class="btn btn-primary" onclick="this.closest('.celebration-modal').remove()">Continue</button>
@@ -701,6 +728,13 @@ function showCelebration(title, message) {
   `;
   
   document.body.appendChild(modal);
+  
+  // Initialize icons
+  setTimeout(() => {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  }, 50);
   
   // Auto-remove after 5 seconds
   setTimeout(() => {
@@ -1039,7 +1073,7 @@ function calculateSleepStats() {
   if (avgEl) avgEl.textContent = avgHours;
   
   if (streak > 0 && streak % 7 === 0) {
-    showCelebration(`🌙 ${streak} Day Streak!`, 'You\'re building incredible sleep habits!');
+    showCelebration(`${streak} Day Streak!`, 'You\'re building incredible sleep habits!');
   }
   
   updateDashboard();
@@ -1627,7 +1661,7 @@ function calculateEnergyStats() {
   if (avgEl) avgEl.textContent = avgScore + '/3';
   
   if (streak > 0 && streak % 7 === 0) {
-    showCelebration(`⚡ ${streak} Day Streak!`, 'You\'re mastering your energy habits!');
+    showCelebration(`${streak} Day Streak!`, 'You\'re mastering your energy habits!');
   }
   
   updateDashboard();
@@ -1844,7 +1878,7 @@ function calculateMindsetStats() {
   if (reflectionsEl) reflectionsEl.textContent = hasReflection;
   
   if (completed > 0 && completed % 4 === 0) {
-    showCelebration(`🧠 Mindset Progress!`, `${completed} days of powerful awareness!`);
+    showCelebration(`Mindset Progress!`, `${completed} days of powerful awareness!`);
   }
   
   updateDashboard();
@@ -2086,7 +2120,7 @@ function calculateMovementStats() {
   if (avgEl) avgEl.textContent = avgBoost >= 0 ? '+' + avgBoost : avgBoost;
   
   if (streak > 0 && streak % 7 === 0) {
-    showCelebration(`💪 ${streak} Day Streak!`, 'Your body thanks you!');
+    showCelebration(`${streak} Day Streak!`, 'Your body thanks you!');
   }
   
   updateDashboard();
@@ -2463,7 +2497,7 @@ function calculateNutritionStats() {
   if (pctEl) pctEl.textContent = overallPct + '%';
   
   if (streak > 0 && streak % 7 === 0) {
-    showCelebration(`🥗 ${streak} Day Streak!`, 'Nourishing your body consistently!');
+    showCelebration(`${streak} Day Streak!`, 'Nourishing your body consistently!');
   }
   
   updateDashboard();
