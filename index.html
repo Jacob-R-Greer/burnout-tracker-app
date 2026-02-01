@@ -12,7 +12,10 @@
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -80,20 +83,20 @@
 
     <div class="nav-section">
       <div class="nav-section-title">Phase 3: Reclaim Purpose</div>
-      <a href="#" class="nav-link" data-step="productivity">
+      <a href="#" class="nav-link nav-link-locked" data-step="productivity" data-locked="true">
         <i data-lucide="target"></i>
         <span>Productivity Power</span>
-        <span class="nav-progress" id="nav-productivity-progress">0%</span>
+        <span class="nav-lock-icon"><i data-lucide="lock" style="width: 14px; height: 14px;"></i></span>
       </a>
-      <a href="#" class="nav-link" data-step="boundary">
+      <a href="#" class="nav-link nav-link-locked" data-step="boundary" data-locked="true">
         <i data-lucide="shield"></i>
         <span>Boundary & Balance</span>
-        <span class="nav-progress" id="nav-boundary-progress">0%</span>
+        <span class="nav-lock-icon"><i data-lucide="lock" style="width: 14px; height: 14px;"></i></span>
       </a>
-      <a href="#" class="nav-link" data-step="purpose">
+      <a href="#" class="nav-link nav-link-locked" data-step="purpose" data-locked="true">
         <i data-lucide="compass"></i>
         <span>Purpose & Resilience</span>
-        <span class="nav-progress" id="nav-purpose-progress">0%</span>
+        <span class="nav-lock-icon"><i data-lucide="lock" style="width: 14px; height: 14px;"></i></span>
       </a>
     </div>
   </nav>
@@ -109,8 +112,22 @@
     <!-- Dashboard Section -->
     <section id="dashboard-section" class="step-section active">
       <div class="section-intro">
-        <h1>Your Recovery Dashboard</h1>
+        <h1>Recovery Dashboard</h1>
         <p>Track your progress across all 9 steps of the Burnout Rescue Roadmap</p>
+      </div>
+
+      <!-- XP & Level Bar -->
+      <div class="xp-level-card">
+        <div class="xp-level-header">
+          <div class="xp-level-info">
+            <span class="xp-level-badge" id="xp-level-badge">Level 1</span>
+            <span class="xp-level-xp" id="xp-total-display">0 XP</span>
+          </div>
+          <span class="xp-level-next" id="xp-next-level">500 XP to Level 2</span>
+        </div>
+        <div class="xp-bar-container">
+          <div class="xp-bar-fill" id="xp-bar-fill" style="width: 0%"></div>
+        </div>
       </div>
 
       <!-- Dashboard Stats -->
@@ -126,15 +143,21 @@
           <div class="stat-subtext">across all steps</div>
         </div>
 
-        <div class="stat-card">
+        <div class="stat-card streak-card">
           <div class="stat-header">
             <span class="stat-label">Current Streak</span>
-            <div class="stat-icon">
+            <div class="streak-flame-icon" id="streak-flame-icon">
               <i data-lucide="flame"></i>
             </div>
           </div>
           <div class="stat-value" id="dash-current-streak">0</div>
-          <div class="stat-subtext">days in a row</div>
+          <div class="stat-subtext">
+            <span id="streak-subtext">days in a row</span>
+            <span class="streak-shield-badge" id="streak-shield-badge" style="display: none;">
+              <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+              <span id="streak-shield-count">0</span> Shield
+            </span>
+          </div>
         </div>
 
         <div class="stat-card">
@@ -295,6 +318,68 @@
           <div class="step-card-progress">
             <div class="progress-ring">
               <div class="progress-text" id="nutrition-progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="phase-card">
+          <div class="phase-header">
+            <h4>Phase 3: Reclaim Purpose</h4>
+            <span class="phase-progress" id="phase3-progress-text">0%</span>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" id="phase3-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Productivity (Locked) -->
+        <div class="step-card step-card-locked" id="step-card-productivity" onclick="handleLockedStep('productivity')">
+          <div class="step-card-icon">
+            <i data-lucide="target"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Productivity Power</div>
+            <div class="step-card-description">Master focused output</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="locked-badge">
+              <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
+              <span>Level 5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boundary (Locked) -->
+        <div class="step-card step-card-locked" id="step-card-boundary" onclick="handleLockedStep('boundary')">
+          <div class="step-card-icon">
+            <i data-lucide="shield"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Boundary & Balance</div>
+            <div class="step-card-description">Protect your energy</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="locked-badge">
+              <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
+              <span>Level 5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purpose (Locked) -->
+        <div class="step-card step-card-locked" id="step-card-purpose" onclick="handleLockedStep('purpose')">
+          <div class="step-card-icon">
+            <i data-lucide="compass"></i>
+          </div>
+          <div class="step-card-content">
+            <div class="step-card-title">Purpose & Resilience</div>
+            <div class="step-card-description">Find lasting meaning</div>
+          </div>
+          <div class="step-card-progress">
+            <div class="locked-badge">
+              <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
+              <span>Level 5</span>
             </div>
           </div>
         </div>

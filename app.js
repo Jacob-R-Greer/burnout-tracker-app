@@ -269,6 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const step = link.getAttribute('data-step');
+      // Check if locked
+      if (link.getAttribute('data-locked') === 'true') {
+        handleLockedStep(step);
+        return;
+      }
       navigateToStep(step);
     });
   });
@@ -456,8 +461,19 @@ function updateDashboard() {
   if (phase2Bar) phase2Bar.style.width = Math.round(phase2Progress) + '%';
   if (phase2Text) phase2Text.textContent = Math.round(phase2Progress) + '%';
   
+  // Phase 3 progress
+  const phase3Progress = (productivityProgress + boundaryProgress + purposeProgress) / 3;
+  const phase3Bar = document.getElementById('phase3-progress-bar');
+  const phase3Text = document.getElementById('phase3-progress-text');
+  if (phase3Bar) phase3Bar.style.width = Math.round(phase3Progress) + '%';
+  if (phase3Text) phase3Text.textContent = Math.round(phase3Progress) + '%';
+
   // Update today's focus
   updateTodaysFocus();
+
+  // Update gamification displays
+  updateStreakDisplay();
+  updateXPDisplay();
 }
 
 function updatePhaseCard(step, progress) {
@@ -833,21 +849,36 @@ function renderTodaySleepTracker() {
 function updateTodaySleepTracker() {
   const todayKey = getTodayKey();
   const checks = [];
-  
+
   for (let i = 0; i < 5; i++) {
     const checkbox = document.getElementById(`today-sleep-check${i}`);
-    checks.push(checkbox ? checkbox.checked : false);
+    const isChecked = checkbox ? checkbox.checked : false;
+    checks.push(isChecked);
+
+    // XP tracking per habit
+    const xpKey = `sleep-${todayKey}-${i}`;
+    if (isChecked) {
+      earnHabitXP(xpKey);
+    } else {
+      deductHabitXP(xpKey);
+    }
   }
-  
+
   const hours = document.getElementById('today-sleep-hours')?.value || '';
   const bedtime = document.getElementById('today-sleep-bedtime')?.value || '';
   const wake = document.getElementById('today-sleep-wake')?.value || '';
   const notes = document.getElementById('today-sleep-notes')?.value || '';
-  
+
   saveSleepDataForDate(todayKey, { checks, hours, bedtime, wake, notes });
   calculateSleepStats();
   renderSleepCalendar();
   renderSleepHabitDashboard();
+
+  // Check for 100% day confetti
+  const completedCount = checks.filter(c => c).length;
+  if (completedCount === 5) {
+    checkStepConfetti('sleep', 100);
+  }
 }
 
 function changeSleepMonth(delta) {
@@ -1160,13 +1191,13 @@ function renderTodayStressTracker() {
 
 function updateTodayStressTracker() {
   const todayKey = getTodayKey();
-  
+
   // Get current phase based on progress
   const allData = getAllStressData();
   const completedDates = Object.keys(allData).sort();
   const dayNum = completedDates.indexOf(todayKey) >= 0 ? completedDates.indexOf(todayKey) + 1 : completedDates.length + 1;
   const actualDayNum = Math.min(dayNum, 14);
-  
+
   let currentPhase = stressPhases[0];
   for (let phase of stressPhases) {
     const [start, end] = phase.days.split('-').map(n => parseInt(n));
@@ -1175,19 +1206,41 @@ function updateTodayStressTracker() {
       break;
     }
   }
-  
+
   const tasks = [];
   for (let i = 0; i < currentPhase.tasks.length; i++) {
     const checkbox = document.getElementById(`today-stress-check${i}`);
-    tasks.push(checkbox ? checkbox.checked : false);
+    const isChecked = checkbox ? checkbox.checked : false;
+    tasks.push(isChecked);
+
+    // XP per stress task
+    const xpKey = `stress-${todayKey}-${i}`;
+    if (isChecked) {
+      earnHabitXP(xpKey);
+    } else {
+      deductHabitXP(xpKey);
+    }
   }
-  
+
   const notes = document.getElementById('today-stress-notes')?.value || '';
   const completed = tasks.every(t => t);
-  
+
+  // Bonus XP for daily reflection (notes)
+  const reflectionKey = `stress-reflection-${todayKey}`;
+  if (notes.trim().length > 10) {
+    earnBonusXP(reflectionKey, XP_PER_REFLECTION);
+  } else {
+    deductBonusXP(reflectionKey);
+  }
+
   saveStressDataForDate(todayKey, { tasks, notes, completed });
   calculateStressStats();
   renderStressJourney();
+
+  // Confetti for all tasks complete
+  if (completed) {
+    checkStepConfetti('stress', 100);
+  }
 }
 
 function renderStressJourney() {
@@ -1428,19 +1481,34 @@ function renderTodayEnergyTracker() {
 function updateTodayEnergyTracker() {
   const todayKey = getTodayKey();
   const checks = [];
-  
+
   for (let i = 0; i < 3; i++) {
     const checkbox = document.getElementById(`today-energy-check${i}`);
-    checks.push(checkbox ? checkbox.checked : false);
+    const isChecked = checkbox ? checkbox.checked : false;
+    checks.push(isChecked);
+
+    // XP per energy habit
+    const xpKey = `energy-${todayKey}-${i}`;
+    if (isChecked) {
+      earnHabitXP(xpKey);
+    } else {
+      deductHabitXP(xpKey);
+    }
   }
-  
+
   const energyLevel = document.getElementById('today-energy-level')?.value || '';
   const notes = document.getElementById('today-energy-notes')?.value || '';
-  
+
   saveEnergyDataForDate(todayKey, { checks, energyLevel, notes });
   calculateEnergyStats();
   renderEnergyCalendar();
   renderEnergyHabitDashboard();
+
+  // Confetti on 3/3
+  const completedCount = checks.filter(c => c).length;
+  if (completedCount === 3) {
+    checkStepConfetti('energy', 100);
+  }
 }
 
 function changeEnergyMonth(delta) {
@@ -1758,7 +1826,15 @@ function updateTodayMindset() {
   typeRadios.forEach(radio => {
     if (radio.checked) type = radio.value;
   });
-  
+
+  // Bonus XP for daily mindset reflection
+  const reflectionKey = `mindset-reflection-${todayKey}`;
+  if (situation.trim().length > 5 && story.trim().length > 5) {
+    earnBonusXP(reflectionKey, XP_PER_REFLECTION);
+  } else {
+    deductBonusXP(reflectionKey);
+  }
+
   saveMindsetDataForDate(todayKey, { situation, story, type });
   calculateMindsetStats();
 }
@@ -1978,7 +2054,15 @@ function updateTodayMovement() {
   const before = document.getElementById('today-move-before')?.value || '';
   const after = document.getElementById('today-move-after')?.value || '';
   const notes = document.getElementById('today-move-notes')?.value || '';
-  
+
+  // Bonus XP for logging a workout
+  const workoutKey = `movement-workout-${todayKey}`;
+  if (type.trim().length > 0 && duration) {
+    earnBonusXP(workoutKey, XP_PER_WORKOUT);
+  } else {
+    deductBonusXP(workoutKey);
+  }
+
   saveMovementDataForDate(todayKey, { type, duration, before, after, notes });
   calculateMovementStats();
   renderMovementCalendar();
@@ -2252,18 +2336,33 @@ function renderTodayNutritionTracker() {
 function updateTodayNutrition() {
   const todayKey = getTodayKey();
   const checks = [];
-  
+
   for (let i = 0; i < nutritionHabits.length; i++) {
     const checkbox = document.getElementById(`today-nutr-check${i}`);
-    checks.push(checkbox ? checkbox.checked : false);
+    const isChecked = checkbox ? checkbox.checked : false;
+    checks.push(isChecked);
+
+    // XP per nutrition habit
+    const xpKey = `nutrition-${todayKey}-${i}`;
+    if (isChecked) {
+      earnHabitXP(xpKey);
+    } else {
+      deductHabitXP(xpKey);
+    }
   }
-  
+
   const notes = document.getElementById('today-nutr-notes')?.value || '';
-  
+
   saveNutritionDataForDate(todayKey, { checks, notes });
   calculateNutritionStats();
   renderNutritionCalendar();
   renderNutritionHabitDashboard();
+
+  // Confetti on all habits complete
+  const completedCount = checks.filter(c => c).length;
+  if (completedCount === nutritionHabits.length && nutritionHabits.length > 0) {
+    checkStepConfetti('nutrition', 100);
+  }
 }
 
 function changeNutritionMonth(delta) {
@@ -2504,6 +2603,298 @@ function calculateNutritionStats() {
 }
 
 // ============================================================================
+// GAMIFICATION ENGINE - XP, LEVELS, CONFETTI, STREAKS, UNLOCKS
+// ============================================================================
+
+// --- XP & Leveling ---
+
+const XP_PER_HABIT = 10;
+const XP_PER_REFLECTION = 50;
+const XP_PER_WORKOUT = 50;
+const XP_PER_LEVEL = 500;
+
+function getXPData() {
+  const saved = localStorage.getItem('gamificationXP');
+  if (!saved) return { totalXP: 0, checkedItems: {} };
+  try {
+    return JSON.parse(saved);
+  } catch (e) {
+    return { totalXP: 0, checkedItems: {} };
+  }
+}
+
+function saveXPData(data) {
+  localStorage.setItem('gamificationXP', JSON.stringify(data));
+}
+
+function getCurrentLevel() {
+  const data = getXPData();
+  return Math.floor(data.totalXP / XP_PER_LEVEL) + 1;
+}
+
+function getXPForCurrentLevel() {
+  const data = getXPData();
+  return data.totalXP % XP_PER_LEVEL;
+}
+
+// Earn XP for a habit checkbox (idempotent: tracks by unique key)
+function earnHabitXP(uniqueKey) {
+  const data = getXPData();
+  if (data.checkedItems[uniqueKey]) return; // Already earned
+  data.checkedItems[uniqueKey] = XP_PER_HABIT;
+  data.totalXP += XP_PER_HABIT;
+  saveXPData(data);
+  playDingSound();
+  pulseElement(uniqueKey);
+  updateXPDisplay();
+  updateMilestoneUnlocks();
+}
+
+// Deduct XP when a habit is unchecked
+function deductHabitXP(uniqueKey) {
+  const data = getXPData();
+  if (!data.checkedItems[uniqueKey]) return; // Not earned
+  data.totalXP = Math.max(0, data.totalXP - data.checkedItems[uniqueKey]);
+  delete data.checkedItems[uniqueKey];
+  saveXPData(data);
+  updateXPDisplay();
+  updateMilestoneUnlocks();
+}
+
+// Earn XP for a reflection or workout (idempotent)
+function earnBonusXP(uniqueKey, amount) {
+  const data = getXPData();
+  if (data.checkedItems[uniqueKey]) return;
+  data.checkedItems[uniqueKey] = amount;
+  data.totalXP += amount;
+  saveXPData(data);
+  playDingSound();
+  updateXPDisplay();
+  updateMilestoneUnlocks();
+}
+
+// Deduct bonus XP when content is cleared
+function deductBonusXP(uniqueKey) {
+  const data = getXPData();
+  if (!data.checkedItems[uniqueKey]) return;
+  data.totalXP = Math.max(0, data.totalXP - data.checkedItems[uniqueKey]);
+  delete data.checkedItems[uniqueKey];
+  saveXPData(data);
+  updateXPDisplay();
+  updateMilestoneUnlocks();
+}
+
+function updateXPDisplay() {
+  const data = getXPData();
+  const level = Math.floor(data.totalXP / XP_PER_LEVEL) + 1;
+  const xpInLevel = data.totalXP % XP_PER_LEVEL;
+  const pct = (xpInLevel / XP_PER_LEVEL) * 100;
+
+  const badge = document.getElementById('xp-level-badge');
+  const totalDisplay = document.getElementById('xp-total-display');
+  const nextLevel = document.getElementById('xp-next-level');
+  const barFill = document.getElementById('xp-bar-fill');
+
+  if (badge) badge.textContent = `Level ${level}`;
+  if (totalDisplay) totalDisplay.textContent = `${data.totalXP} XP`;
+  if (nextLevel) nextLevel.textContent = `${XP_PER_LEVEL - xpInLevel} XP to Level ${level + 1}`;
+  if (barFill) barFill.style.width = pct + '%';
+}
+
+// --- Sound Feedback ---
+
+function playDingSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+    oscillator.frequency.setValueAtTime(1174.66, audioCtx.currentTime + 0.08); // D6
+
+    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+
+    oscillator.start(audioCtx.currentTime);
+    oscillator.stop(audioCtx.currentTime + 0.25);
+  } catch (e) {
+    // Silently fail if audio not available
+  }
+}
+
+// --- Visual Pulse Feedback ---
+
+function pulseElement(uniqueKey) {
+  // Find the closest checklist-item by traversing from the checkbox
+  const parts = uniqueKey.split('-');
+  // Try to find the checkbox element that corresponds to this key
+  const checkboxes = document.querySelectorAll('.checklist-item');
+  checkboxes.forEach(item => {
+    const cb = item.querySelector('input[type="checkbox"]');
+    if (cb && cb.checked) {
+      // Brief pulse for recently checked items
+      item.classList.add('habit-pulse');
+      setTimeout(() => item.classList.remove('habit-pulse'), 600);
+    }
+  });
+}
+
+// --- Confetti System ---
+
+function fireConfetti() {
+  if (typeof confetti !== 'function') return;
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ['#8c9d7b', '#9bb087', '#D4AF37', '#ffffff']
+  });
+}
+
+function checkStepConfetti(stepName, completionPct) {
+  if (completionPct >= 100) {
+    const confettiKey = `confetti-${stepName}-${getTodayKey()}`;
+    const fired = localStorage.getItem(confettiKey);
+    if (!fired) {
+      localStorage.setItem(confettiKey, 'true');
+      fireConfetti();
+    }
+  }
+}
+
+// --- Flame Streak System ---
+
+function getStreakData() {
+  const saved = localStorage.getItem('gamificationStreak');
+  if (!saved) return { shields: 0, shieldGrantedAtStreak: 0 };
+  try {
+    return JSON.parse(saved);
+  } catch (e) {
+    return { shields: 0, shieldGrantedAtStreak: 0 };
+  }
+}
+
+function saveStreakData(data) {
+  localStorage.setItem('gamificationStreak', JSON.stringify(data));
+}
+
+function updateStreakDisplay() {
+  const streakEl = document.getElementById('dash-current-streak');
+  const streak = parseInt(streakEl?.textContent || '0');
+  const flameIcon = document.getElementById('streak-flame-icon');
+  const shieldBadge = document.getElementById('streak-shield-badge');
+  const shieldCount = document.getElementById('streak-shield-count');
+  const streakData = getStreakData();
+
+  // Grant shield at 7-day streak (only once per 7-streak milestone)
+  if (streak >= 7 && streakData.shieldGrantedAtStreak < streak) {
+    const newShields = Math.floor(streak / 7);
+    if (newShields > streakData.shields) {
+      streakData.shields = newShields;
+      streakData.shieldGrantedAtStreak = streak;
+      saveStreakData(streakData);
+    }
+  }
+
+  // Update flame visual
+  if (flameIcon) {
+    if (streak >= 3) {
+      flameIcon.classList.add('flame-active');
+      flameIcon.classList.remove('flame-cold');
+    } else {
+      flameIcon.classList.remove('flame-active');
+      flameIcon.classList.add('flame-cold');
+    }
+  }
+
+  // Update shield badge
+  if (shieldBadge && shieldCount) {
+    if (streakData.shields > 0) {
+      shieldBadge.style.display = 'inline-flex';
+      shieldCount.textContent = streakData.shields;
+    } else {
+      shieldBadge.style.display = 'none';
+    }
+  }
+}
+
+// Grace day logic: called when recalculating streak,
+// returns true if a shield was consumed to save the streak
+function applyStreakShield(wouldBreak) {
+  if (!wouldBreak) return false;
+  const data = getStreakData();
+  if (data.shields > 0) {
+    data.shields--;
+    saveStreakData(data);
+    return true; // Streak preserved
+  }
+  return false; // Streak resets
+}
+
+// --- Milestone Unlock System (Steps 7-9) ---
+
+function updateMilestoneUnlocks() {
+  const level = getCurrentLevel();
+  const isUnlocked = level >= 5;
+  const lockedSteps = ['productivity', 'boundary', 'purpose'];
+
+  lockedSteps.forEach(step => {
+    const card = document.getElementById(`step-card-${step}`);
+    const navLink = document.querySelector(`.nav-link[data-step="${step}"]`);
+
+    if (card) {
+      if (isUnlocked) {
+        card.classList.remove('step-card-locked');
+        card.setAttribute('onclick', `navigateToStep('${step}')`);
+        // Replace locked badge with progress ring
+        const progressEl = card.querySelector('.step-card-progress');
+        if (progressEl && progressEl.querySelector('.locked-badge')) {
+          progressEl.innerHTML = `
+            <div class="progress-ring">
+              <div class="progress-text" id="${step}-progress-text">0%</div>
+            </div>
+          `;
+        }
+      } else {
+        card.classList.add('step-card-locked');
+        card.setAttribute('onclick', `handleLockedStep('${step}')`);
+      }
+    }
+
+    if (navLink) {
+      if (isUnlocked) {
+        navLink.classList.remove('nav-link-locked');
+        navLink.removeAttribute('data-locked');
+        // Replace lock icon with progress text
+        const lockIcon = navLink.querySelector('.nav-lock-icon');
+        if (lockIcon) {
+          lockIcon.outerHTML = `<span class="nav-progress" id="nav-${step}-progress">0%</span>`;
+        }
+      } else {
+        navLink.classList.add('nav-link-locked');
+        navLink.setAttribute('data-locked', 'true');
+      }
+    }
+  });
+}
+
+function handleLockedStep(step) {
+  const level = getCurrentLevel();
+  if (level >= 5) {
+    navigateToStep(step);
+    return;
+  }
+  showCelebration(
+    'Step Locked',
+    `Reach Level 5 to unlock this step. You're currently Level ${level}. Keep earning XP!`
+  );
+}
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
@@ -2515,10 +2906,14 @@ window.addEventListener('load', () => {
   initMindsetTracker();
   initMovementTracker();
   initNutritionTracker();
-  
+
+  // Initialize gamification systems
+  updateXPDisplay();
+  updateMilestoneUnlocks();
+
   // Update dashboard
   updateDashboard();
-  
+
   // Initialize Lucide icons
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
