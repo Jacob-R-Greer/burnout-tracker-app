@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome - Beyond Burnout</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+  <div class="onboarding-container">
+
+    <!-- Screen 1: Welcome -->
+    <div class="onboarding-screen" id="welcome-screen">
+      <div class="onboarding-icon">
+        <i data-lucide="sparkles" style="width: 64px; height: 64px;"></i>
+      </div>
+      <h1>Welcome to Beyond Burnout</h1>
+      <p>Your 9-step journey to recover from burnout and rebuild lasting resilience</p>
+      <div class="phase-preview">
+        <div class="phase-preview-item">
+          <span class="phase-number">Phase 1</span>
+          <span class="phase-name">Recover Rhythms</span>
+          <span class="phase-steps">Sleep &bull; Stress &bull; Energy</span>
+        </div>
+        <div class="phase-preview-item locked">
+          <i data-lucide="lock" style="width:18px;height:18px;"></i>
+          <span class="phase-number">Phase 2</span>
+          <span class="phase-name">Rebuild Resilience</span>
+        </div>
+        <div class="phase-preview-item locked">
+          <i data-lucide="lock" style="width:18px;height:18px;"></i>
+          <span class="phase-number">Phase 3</span>
+          <span class="phase-name">Reclaim Purpose</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-large" onclick="nextOnboardingScreen()">Let's Begin</button>
+    </div>
+
+    <!-- Screen 2: Goal Setting -->
+    <div class="onboarding-screen" id="goal-screen">
+      <h2>What brings you here today?</h2>
+      <p>Select all that apply - this helps us personalize your journey</p>
+
+      <div class="goal-options">
+        <label class="goal-option">
+          <input type="checkbox" name="goal" value="recovering">
+          <div class="goal-card">
+            <i data-lucide="heart-pulse"></i>
+            <span>Recovering from burnout</span>
+          </div>
+        </label>
+
+        <label class="goal-option">
+          <input type="checkbox" name="goal" value="preventing">
+          <div class="goal-card">
+            <i data-lucide="shield"></i>
+            <span>Preventing burnout</span>
+          </div>
+        </label>
+
+        <label class="goal-option">
+          <input type="checkbox" name="goal" value="habits">
+          <div class="goal-card">
+            <i data-lucide="check-circle"></i>
+            <span>Building better habits</span>
+          </div>
+        </label>
+
+        <label class="goal-option">
+          <input type="checkbox" name="goal" value="energy">
+          <div class="goal-card">
+            <i data-lucide="zap"></i>
+            <span>Improving energy/sleep</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="onboarding-nav">
+        <button class="btn btn-secondary" onclick="prevOnboardingScreen()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingScreen()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Screen 3: Biggest Struggle -->
+    <div class="onboarding-screen" id="struggle-screen">
+      <h2>What's your biggest challenge right now?</h2>
+      <p>This will help us recommend where to start</p>
+
+      <div class="struggle-options">
+        <label class="struggle-option">
+          <input type="radio" name="struggle" value="sleep">
+          <div class="struggle-card">
+            <i data-lucide="moon"></i>
+            <div class="struggle-content">
+              <h4>Poor Sleep Quality</h4>
+              <p>Trouble falling asleep, staying asleep, or feeling rested</p>
+            </div>
+          </div>
+        </label>
+
+        <label class="struggle-option">
+          <input type="radio" name="struggle" value="stress">
+          <div class="struggle-card">
+            <i data-lucide="wind"></i>
+            <div class="struggle-content">
+              <h4>High Stress & Anxiety</h4>
+              <p>Constant overwhelm, racing thoughts, can't relax</p>
+            </div>
+          </div>
+        </label>
+
+        <label class="struggle-option">
+          <input type="radio" name="struggle" value="energy">
+          <div class="struggle-card">
+            <i data-lucide="battery-low"></i>
+            <div class="struggle-content">
+              <h4>Low Energy</h4>
+              <p>Always tired, crashes during the day, no motivation</p>
+            </div>
+          </div>
+        </label>
+
+        <label class="struggle-option">
+          <input type="radio" name="struggle" value="mindset">
+          <div class="struggle-card">
+            <i data-lucide="brain"></i>
+            <div class="struggle-content">
+              <h4>Negative Mindset</h4>
+              <p>Self-doubt, negative self-talk, can't see progress</p>
+            </div>
+          </div>
+        </label>
+
+        <label class="struggle-option">
+          <input type="radio" name="struggle" value="all">
+          <div class="struggle-card">
+            <i data-lucide="circle-alert"></i>
+            <div class="struggle-content">
+              <h4>All of the Above</h4>
+              <p>Everything feels hard right now</p>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="onboarding-nav">
+        <button class="btn btn-secondary" onclick="prevOnboardingScreen()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingScreen()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Screen 4: Baseline Assessment -->
+    <div class="onboarding-screen" id="baseline-screen">
+      <h2>Quick Baseline Check-In</h2>
+      <p>Help us understand where you're starting from</p>
+
+      <div class="baseline-questions">
+        <div class="baseline-question">
+          <label>How many nights last week did you sleep 7+ hours?</label>
+          <div class="number-selector">
+            <button onclick="changeBaselineValue('sleep', -1)">-</button>
+            <span id="baseline-sleep-value">0</span>
+            <button onclick="changeBaselineValue('sleep', 1)">+</button>
+          </div>
+          <div class="number-labels">
+            <span>0 nights</span>
+            <span>7 nights</span>
+          </div>
+        </div>
+
+        <div class="baseline-question">
+          <label>Rate your current stress level</label>
+          <input type="range" id="baseline-stress" min="1" max="10" value="5" oninput="document.getElementById('stress-display').textContent = this.value">
+          <div class="range-labels">
+            <span>1 - Low</span>
+            <span>5 - Moderate</span>
+            <span>10 - Extreme</span>
+          </div>
+          <div class="range-value">Current: <strong id="stress-display">5</strong></div>
+        </div>
+
+        <div class="baseline-question">
+          <label>How's your energy throughout the day?</label>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="energy" value="low">
+              <span>Low - Always tired</span>
+            </label>
+            <label>
+              <input type="radio" name="energy" value="moderate" checked>
+              <span>Moderate - Some good days</span>
+            </label>
+            <label>
+              <input type="radio" name="energy" value="high">
+              <span>High - Generally energized</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="baseline-question">
+          <label>How many days did you intentionally move your body last week?</label>
+          <div class="number-selector">
+            <button onclick="changeBaselineValue('movement', -1)">-</button>
+            <span id="baseline-movement-value">0</span>
+            <button onclick="changeBaselineValue('movement', 1)">+</button>
+          </div>
+          <div class="number-labels">
+            <span>0 days</span>
+            <span>7 days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboarding-nav">
+        <button class="btn btn-secondary" onclick="prevOnboardingScreen()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingScreen()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Screen 5: Smart Recommendation -->
+    <div class="onboarding-screen" id="recommendation-screen">
+      <div class="onboarding-icon">
+        <i data-lucide="compass" style="width: 64px; height: 64px;"></i>
+      </div>
+      <h2>Your Personalized Starting Point</h2>
+      <p>Based on your responses, we recommend:</p>
+
+      <div class="recommendation-card" id="recommended-step">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div class="recommendation-explanation" id="recommendation-why">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div class="phase-1-overview">
+        <h3>You're Starting with Phase 1: Recover Rhythms</h3>
+        <p>Phase 2 and 3 will unlock as you earn XP</p>
+
+        <div class="unlock-requirements">
+          <div class="unlock-card locked">
+            <div class="unlock-header">
+              <i data-lucide="lock"></i>
+              <span>Phase 2: Rebuild Resilience</span>
+            </div>
+            <div class="unlock-requirement">
+              <div class="xp-bar">
+                <div class="xp-fill" style="width: 0%"></div>
+              </div>
+              <span>0 / 100 XP to unlock</span>
+            </div>
+          </div>
+
+          <div class="unlock-card locked">
+            <div class="unlock-header">
+              <i data-lucide="lock"></i>
+              <span>Phase 3: Reclaim Purpose</span>
+            </div>
+            <div class="unlock-requirement">
+              <div class="xp-bar">
+                <div class="xp-fill" style="width: 0%"></div>
+              </div>
+              <span>0 / 250 XP to unlock</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboarding-nav">
+        <button class="btn btn-secondary" onclick="prevOnboardingScreen()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingScreen()">Let's Start</button>
+      </div>
+    </div>
+
+    <!-- Screen 6: Habit Selection -->
+    <div class="onboarding-screen" id="habit-selection-screen">
+      <h2>Choose Your Starting Habits</h2>
+      <p>Don't overwhelm yourself - pick 2-3 habits to focus on first</p>
+
+      <div class="habit-selection-group" id="recommended-habits-group">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div class="habit-tip">
+        <i data-lucide="lightbulb"></i>
+        <p><strong>Pro tip:</strong> You can always add more habits later. Starting small builds momentum.</p>
+      </div>
+
+      <div class="selected-count">
+        <span id="habits-selected-count">0</span> habits selected
+      </div>
+
+      <div class="onboarding-nav">
+        <button class="btn btn-secondary" onclick="prevOnboardingScreen()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingScreen()" id="habit-continue-btn" disabled>Continue</button>
+      </div>
+    </div>
+
+    <!-- Screen 7: Quick Tutorial -->
+    <div class="onboarding-screen" id="tutorial-screen">
+      <h2>How Tracking Works</h2>
+      <p>Here's how to build your recovery habits</p>
+
+      <div class="tutorial-demo">
+        <div class="tutorial-step" id="tutorial-step-1">
+          <div class="tutorial-annotation">
+            <i data-lucide="check-square"></i>
+            <span>Check off the habits you completed today</span>
+          </div>
+          <div class="tutorial-checklist">
+            <div class="tutorial-check-item">
+              <input type="checkbox" id="tut-check1" onchange="advanceTutorial()">
+              <label for="tut-check1">Example: Morning sunlight (5-20 min)</label>
+            </div>
+            <div class="tutorial-check-item">
+              <input type="checkbox" id="tut-check2" onchange="advanceTutorial()">
+              <label for="tut-check2">Example: Hydrate with electrolytes</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="tutorial-step-2" style="display: none;">
+          <div class="tutorial-annotation">
+            <i data-lucide="star"></i>
+            <span>Your progress is saved and you earn XP</span>
+          </div>
+          <div class="tutorial-success">
+            <div class="stat-icon" style="width: 64px; height: 64px; margin: 0 auto 16px; background: var(--brand-sage);">
+              <i data-lucide="check-circle" style="width: 36px; height: 36px; color: white;"></i>
+            </div>
+            <h3>Great job! You earn XP for each entry!</h3>
+            <div class="xp-earned">+10 XP</div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="tutorial-step-3" style="display: none;">
+          <div class="tutorial-annotation">
+            <i data-lucide="flame"></i>
+            <span>Build streaks by logging daily</span>
+          </div>
+          <div class="tutorial-streak-demo">
+            <div class="streak-demo-days">
+              <div class="streak-day filled">M</div>
+              <div class="streak-day filled">T</div>
+              <div class="streak-day filled">W</div>
+              <div class="streak-day filled">T</div>
+              <div class="streak-day filled">F</div>
+              <div class="streak-day">S</div>
+              <div class="streak-day">S</div>
+            </div>
+            <div class="streak-demo-label">5-day streak! Bonus XP at 7 days.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-nav">
+        <button class="btn btn-secondary" onclick="prevOnboardingScreen()">Back</button>
+        <button class="btn btn-primary" onclick="nextTutorialStep()" id="tutorial-next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- Screen 8: Commitment -->
+    <div class="onboarding-screen" id="commitment-screen">
+      <h2>Make It Stick</h2>
+      <p>Set yourself up for success</p>
+
+      <div class="commitment-card">
+        <div class="commitment-statement">
+          <div class="stat-icon" style="width: 56px; height: 56px; margin: 0 auto 16px; background: var(--brand-sage);">
+            <i data-lucide="check-square" style="width: 32px; height: 32px; color: white;"></i>
+          </div>
+          <h3>I commit to tracking for the next 7 days</h3>
+          <p>Building this habit is the first step to recovery</p>
+        </div>
+
+        <div class="reminder-setup">
+          <label for="reminder-time">Daily reminder time</label>
+          <input type="time" id="reminder-time" value="20:00">
+          <p class="helper-text">Set a daily alarm to remind yourself to log habits</p>
+        </div>
+      </div>
+
+      <div class="first-week-checklist">
+        <h3>Your First Week Goals</h3>
+        <div class="checklist">
+          <div class="checklist-item">
+            <i data-lucide="check-circle" style="width:20px;height:20px;color:var(--brand-sage);flex-shrink:0;"></i>
+            <span>Complete baseline assessment</span>
+          </div>
+          <div class="checklist-item">
+            <i data-lucide="circle" style="width:20px;height:20px;color:var(--text-secondary);flex-shrink:0;"></i>
+            <span>Log habits for 3 days in a row</span>
+          </div>
+          <div class="checklist-item">
+            <i data-lucide="circle" style="width:20px;height:20px;color:var(--text-secondary);flex-shrink:0;"></i>
+            <span>Reach your first 7-day streak</span>
+          </div>
+          <div class="checklist-item">
+            <i data-lucide="circle" style="width:20px;height:20px;color:var(--text-secondary);flex-shrink:0;"></i>
+            <span>Earn 50 XP</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-large" onclick="completeOnboarding()">
+        Start My Journey
+        <i data-lucide="arrow-right" style="width:20px;height:20px;margin-left:8px;"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>

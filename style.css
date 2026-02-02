@@ -156,14 +156,22 @@ h1,
   flex: 1;
 }
 
-.nav-progress {
+.nav-streak {
   font-size: 0.85em;
   color: var(--text-light);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
-.nav-link.active .nav-progress {
+.nav-link.active .nav-streak {
   color: rgba(255, 255, 255, 0.8);
+}
+
+.nav-link.phase-locked {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .mobile-menu-toggle {
@@ -810,23 +818,64 @@ h1,
   font-weight: 900;
 }
 
-.phase-progress {
-  font-size: 1.1em;
-  font-weight: 700;
+.phase-lock-icon i {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.phase-bar {
+.phase-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.phase-stat {
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.phase-stat-value {
+  font-weight: 700;
+  font-size: 1.3em;
+}
+
+.phase-stat-label {
+  font-size: 0.8em;
+  opacity: 0.9;
+}
+
+.phase-unlock-bar {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.xp-bar {
   height: 8px;
   background: rgba(255, 255, 255, 0.3);
   border-radius: 4px;
   overflow: hidden;
 }
 
-.phase-bar-fill {
+.xp-fill {
   height: 100%;
-  background: white;
+  background: var(--success-gold);
   transition: width 0.3s ease;
   border-radius: 4px;
+}
+
+.xp-label {
+  font-size: 0.8em;
+  opacity: 0.85;
+}
+
+.phase-card.locked {
+  opacity: 0.6;
 }
 
 .step-card {
@@ -876,31 +925,24 @@ h1,
   color: var(--text-secondary);
 }
 
-.progress-ring {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: conic-gradient(var(--brand-sage) 0%, var(--bg-cream) 0%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+.step-card-streak {
+  text-align: center;
+  min-width: 80px;
 }
 
-.progress-ring::before {
-  content: '';
-  position: absolute;
-  width: 52px;
-  height: 52px;
-  background: var(--card-white);
-  border-radius: 50%;
-}
-
-.progress-text {
-  position: relative;
+.streak-number {
+  font-size: 2em;
   font-weight: 700;
-  font-size: 0.95em;
   color: var(--brand-sage);
+  line-height: 1;
+}
+
+.streak-label {
+  font-size: 0.75em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 /* ============================================================================
@@ -1015,4 +1057,74 @@ h1,
 
 .mt-8 {
   margin-top: 32px;
+}
+
+/* ============================================================================
+   SIDEBAR XP DISPLAY
+   ============================================================================ */
+
+.sidebar-xp {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border-gray);
+  background: var(--bg-cream);
+}
+
+.xp-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.95em;
+  color: var(--brand-sage);
+}
+
+/* ============================================================================
+   XP NOTIFICATION
+   ============================================================================ */
+
+.xp-notification {
+  position: fixed;
+  top: 80px;
+  right: -300px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--card-white);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: right 0.3s ease-out;
+}
+
+.xp-notification.show {
+  right: 20px;
+}
+
+.xp-notif-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--brand-sage);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.xp-notif-icon i {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.xp-notif-amount {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--brand-sage);
+}
+
+.xp-notif-reason {
+  font-size: 0.9em;
+  color: var(--text-secondary);
 }
