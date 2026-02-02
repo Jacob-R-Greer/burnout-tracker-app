@@ -39,6 +39,13 @@
       </button>
     </div>
 
+    <div class="sidebar-xp">
+      <div class="xp-display">
+        <i data-lucide="star" style="width:16px;height:16px;color:var(--success-gold);"></i>
+        <span id="user-xp-display">0</span> XP
+      </div>
+    </div>
+
     <div class="nav-section">
       <div class="nav-section-title">Phase 1: Recover Rhythms</div>
       <a href="#" class="nav-link active" data-step="dashboard">
@@ -48,55 +55,55 @@
       <a href="#" class="nav-link" data-step="sleep">
         <i data-lucide="moon"></i>
         <span>Sleep Sanctuary</span>
-        <span class="nav-progress" id="nav-sleep-progress">0%</span>
+        <span class="nav-streak" id="nav-sleep-streak"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> 0</span>
       </a>
       <a href="#" class="nav-link" data-step="stress">
         <i data-lucide="wind"></i>
         <span>Stress Soothers</span>
-        <span class="nav-progress" id="nav-stress-progress">0%</span>
+        <span class="nav-streak" id="nav-stress-streak"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> 0</span>
       </a>
       <a href="#" class="nav-link" data-step="energy">
         <i data-lucide="zap"></i>
         <span>Energy Essentials</span>
-        <span class="nav-progress" id="nav-energy-progress">0%</span>
+        <span class="nav-streak" id="nav-energy-streak"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> 0</span>
       </a>
     </div>
 
     <div class="nav-section">
       <div class="nav-section-title">Phase 2: Rebuild Resilience</div>
-      <a href="#" class="nav-link" data-step="mindset">
+      <a href="#" class="nav-link phase2-nav" data-step="mindset">
         <i data-lucide="brain"></i>
         <span>Mindset Mastery</span>
-        <span class="nav-progress" id="nav-mindset-progress">0%</span>
+        <span class="nav-streak" id="nav-mindset-streak"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> 0</span>
       </a>
-      <a href="#" class="nav-link" data-step="movement">
+      <a href="#" class="nav-link phase2-nav" data-step="movement">
         <i data-lucide="activity"></i>
         <span>Movement Momentum</span>
-        <span class="nav-progress" id="nav-movement-progress">0%</span>
+        <span class="nav-streak" id="nav-movement-streak"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> 0</span>
       </a>
-      <a href="#" class="nav-link" data-step="nutrition">
+      <a href="#" class="nav-link phase2-nav" data-step="nutrition">
         <i data-lucide="apple"></i>
         <span>Nutrition Navigation</span>
-        <span class="nav-progress" id="nav-nutrition-progress">0%</span>
+        <span class="nav-streak" id="nav-nutrition-streak"><i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> 0</span>
       </a>
     </div>
 
     <div class="nav-section">
       <div class="nav-section-title">Phase 3: Reclaim Purpose</div>
-      <a href="#" class="nav-link nav-link-locked" data-step="productivity" data-locked="true">
+      <a href="#" class="nav-link phase3-nav" data-step="productivity">
         <i data-lucide="target"></i>
         <span>Productivity Power</span>
-        <span class="nav-lock-icon"><i data-lucide="lock" style="width: 14px; height: 14px;"></i></span>
+        <span class="nav-streak" id="nav-productivity-streak"><i data-lucide="lock" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i></span>
       </a>
-      <a href="#" class="nav-link nav-link-locked" data-step="boundary" data-locked="true">
+      <a href="#" class="nav-link phase3-nav" data-step="boundary">
         <i data-lucide="shield"></i>
         <span>Boundary & Balance</span>
-        <span class="nav-lock-icon"><i data-lucide="lock" style="width: 14px; height: 14px;"></i></span>
+        <span class="nav-streak" id="nav-boundary-streak"><i data-lucide="lock" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i></span>
       </a>
-      <a href="#" class="nav-link nav-link-locked" data-step="purpose" data-locked="true">
+      <a href="#" class="nav-link phase3-nav" data-step="purpose">
         <i data-lucide="compass"></i>
         <span>Purpose & Resilience</span>
-        <span class="nav-lock-icon"><i data-lucide="lock" style="width: 14px; height: 14px;"></i></span>
+        <span class="nav-streak" id="nav-purpose-streak"><i data-lucide="lock" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i></span>
       </a>
     </div>
   </nav>
@@ -134,44 +141,16 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-header">
-            <span class="stat-label">Overall Progress</span>
-            <div class="stat-icon">
-              <i data-lucide="trending-up"></i>
-            </div>
-          </div>
-          <div class="stat-value" id="overall-progress">0%</div>
-          <div class="stat-subtext">across all steps</div>
-        </div>
-
-        <div class="stat-card streak-card">
-          <div class="stat-header">
             <span class="stat-label">Current Streak</span>
-            <div class="streak-flame-icon" id="streak-flame-icon">
+            <div class="stat-icon">
               <i data-lucide="flame"></i>
             </div>
           </div>
           <div class="stat-value" id="dash-current-streak">0</div>
-          <div class="stat-subtext">
-            <span id="streak-subtext">days in a row</span>
-            <span class="streak-shield-badge" id="streak-shield-badge" style="display: none;">
-              <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
-              <span id="streak-shield-count">0</span> Shield
-            </span>
-          </div>
+          <div class="stat-subtext">days in a row</div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-label">Steps Completed</span>
-            <div class="stat-icon">
-              <i data-lucide="check-circle"></i>
-            </div>
-          </div>
-          <div class="stat-value" id="steps-completed">0/9</div>
-          <div class="stat-subtext">75%+ completion</div>
-        </div>
-
-        <div class="stat-card">
+        <div class="stat-card streak-card">
           <div class="stat-header">
             <span class="stat-label">Days Active</span>
             <div class="stat-icon">
@@ -181,13 +160,35 @@
           <div class="stat-value" id="dash-days-active">0</div>
           <div class="stat-subtext">total tracking days</div>
         </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Active Habits</span>
+            <div class="stat-icon">
+              <i data-lucide="list-checks"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="dash-active-habits">0</div>
+          <div class="stat-subtext">habits tracked</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Check-ins</span>
+            <div class="stat-icon">
+              <i data-lucide="check-circle"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="dash-total-checkins">0</div>
+          <div class="stat-subtext">habit completions</div>
+        </div>
       </div>
 
       <!-- Today's Focus -->
       <div class="week-card">
         <div class="week-header">
           <h3 class="week-title">Today's Focus</h3>
-          <span class="week-progress">What's left to do</span>
+          <span class="week-progress">Habits due today</span>
         </div>
         
         <div class="focus-items" id="today-focus-items">
@@ -205,13 +206,23 @@
 
       <div class="phase-grid">
         <!-- Phase 1 -->
-        <div class="phase-card">
+        <div class="phase-card" id="phase1-card">
           <div class="phase-header">
             <h4>Phase 1: Recover Rhythms</h4>
-            <span class="phase-progress" id="phase1-progress-text">0%</span>
           </div>
-          <div class="phase-bar">
-            <div class="phase-bar-fill" id="phase1-progress-bar" style="width: 0%"></div>
+          <div class="phase-summary">
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase1-sleep-streak">0</div>
+              <div class="phase-stat-label">Sleep Streak</div>
+            </div>
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase1-stress-streak">0</div>
+              <div class="phase-stat-label">Stress Practice</div>
+            </div>
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase1-energy-streak">0</div>
+              <div class="phase-stat-label">Energy Habits</div>
+            </div>
           </div>
         </div>
 
@@ -224,10 +235,9 @@
             <div class="step-card-title">Sleep Sanctuary</div>
             <div class="step-card-description">Reset your body's natural rhythm</div>
           </div>
-          <div class="step-card-progress">
-            <div class="progress-ring">
-              <div class="progress-text" id="sleep-progress-text">0%</div>
-            </div>
+          <div class="step-card-streak">
+            <div class="streak-number" id="sleep-streak-display">0</div>
+            <div class="streak-label">day streak</div>
           </div>
         </div>
 
@@ -240,10 +250,9 @@
             <div class="step-card-title">Stress Soothers</div>
             <div class="step-card-description">Calm your nervous system</div>
           </div>
-          <div class="step-card-progress">
-            <div class="progress-ring">
-              <div class="progress-text" id="stress-progress-text">0%</div>
-            </div>
+          <div class="step-card-streak">
+            <div class="streak-number" id="stress-streak-display">0</div>
+            <div class="streak-label">day streak</div>
           </div>
         </div>
 
@@ -256,26 +265,42 @@
             <div class="step-card-title">Energy Essentials</div>
             <div class="step-card-description">Stabilize daily energy</div>
           </div>
-          <div class="step-card-progress">
-            <div class="progress-ring">
-              <div class="progress-text" id="energy-progress-text">0%</div>
-            </div>
+          <div class="step-card-streak">
+            <div class="streak-number" id="energy-streak-display">0</div>
+            <div class="streak-label">day streak</div>
           </div>
         </div>
 
         <!-- Phase 2 -->
-        <div class="phase-card">
+        <div class="phase-card" id="phase2-card">
           <div class="phase-header">
             <h4>Phase 2: Rebuild Resilience</h4>
-            <span class="phase-progress" id="phase2-progress-text">0%</span>
+            <span class="phase-lock-icon" id="phase2-lock"><i data-lucide="lock"></i></span>
           </div>
-          <div class="phase-bar">
-            <div class="phase-bar-fill" id="phase2-progress-bar" style="width: 0%"></div>
+          <div class="phase-summary">
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase2-mindset-streak">0</div>
+              <div class="phase-stat-label">Mindset Streak</div>
+            </div>
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase2-movement-streak">0</div>
+              <div class="phase-stat-label">Movement Streak</div>
+            </div>
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase2-nutrition-streak">0</div>
+              <div class="phase-stat-label">Nutrition Streak</div>
+            </div>
+          </div>
+          <div class="phase-unlock-bar" id="phase2-unlock-section">
+            <div class="xp-bar">
+              <div class="xp-fill" id="phase2-unlock-progress" style="width: 0%"></div>
+            </div>
+            <span class="xp-label" id="phase2-xp-label">0 / 100 XP to unlock</span>
           </div>
         </div>
 
         <!-- Mindset -->
-        <div class="step-card" onclick="navigateToStep('mindset')">
+        <div class="step-card phase2-step" onclick="navigateToStep('mindset')">
           <div class="step-card-icon">
             <i data-lucide="brain"></i>
           </div>
@@ -283,15 +308,14 @@
             <div class="step-card-title">Mindset Mastery</div>
             <div class="step-card-description">Reprogram unhelpful thoughts</div>
           </div>
-          <div class="step-card-progress">
-            <div class="progress-ring">
-              <div class="progress-text" id="mindset-progress-text">0%</div>
-            </div>
+          <div class="step-card-streak">
+            <div class="streak-number" id="mindset-streak-display">0</div>
+            <div class="streak-label">day streak</div>
           </div>
         </div>
 
         <!-- Movement -->
-        <div class="step-card" onclick="navigateToStep('movement')">
+        <div class="step-card phase2-step" onclick="navigateToStep('movement')">
           <div class="step-card-icon">
             <i data-lucide="activity"></i>
           </div>
@@ -299,15 +323,14 @@
             <div class="step-card-title">Movement Momentum</div>
             <div class="step-card-description">Build physical confidence</div>
           </div>
-          <div class="step-card-progress">
-            <div class="progress-ring">
-              <div class="progress-text" id="movement-progress-text">0%</div>
-            </div>
+          <div class="step-card-streak">
+            <div class="streak-number" id="movement-streak-display">0</div>
+            <div class="streak-label">day streak</div>
           </div>
         </div>
 
         <!-- Nutrition -->
-        <div class="step-card" onclick="navigateToStep('nutrition')">
+        <div class="step-card phase2-step" onclick="navigateToStep('nutrition')">
           <div class="step-card-icon">
             <i data-lucide="apple"></i>
           </div>
@@ -315,10 +338,9 @@
             <div class="step-card-title">Nutrition Navigation</div>
             <div class="step-card-description">Nourish your body simply</div>
           </div>
-          <div class="step-card-progress">
-            <div class="progress-ring">
-              <div class="progress-text" id="nutrition-progress-text">0%</div>
-            </div>
+          <div class="step-card-streak">
+            <div class="streak-number" id="nutrition-streak-display">0</div>
+            <div class="streak-label">day streak</div>
           </div>
         </div>
 

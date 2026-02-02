@@ -1,0 +1,814 @@
+/* ============================================================================
+   ONBOARDING STYLES - Beyond Burnout
+   ============================================================================ */
+
+.onboarding-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--bg-cream) 0%, #e8ede4 100%);
+}
+
+.onboarding-screen {
+  display: none;
+  max-width: 800px;
+  width: 100%;
+  background: var(--card-white);
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  animation: onb-slideIn 0.4s ease-out;
+}
+
+.onboarding-screen.active {
+  display: block;
+}
+
+@keyframes onb-slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.onboarding-icon {
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--brand-sage);
+}
+
+.onboarding-screen h1 {
+  font-size: 2.5em;
+  text-align: center;
+  margin-bottom: 16px;
+  color: var(--brand-sage);
+  font-weight: 900;
+}
+
+.onboarding-screen h2 {
+  font-size: 2em;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
+.onboarding-screen > p {
+  text-align: center;
+  font-size: 1.1em;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+/* ============================================================================
+   PHASE PREVIEW (Welcome Screen)
+   ============================================================================ */
+
+.phase-preview {
+  display: grid;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.phase-preview-item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-cream);
+  border-radius: 12px;
+  border: 2px solid var(--border-gray);
+}
+
+.phase-preview-item.locked {
+  opacity: 0.5;
+}
+
+.phase-number {
+  font-weight: 700;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  color: var(--brand-sage);
+}
+
+.phase-name {
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.phase-steps {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   GOAL OPTIONS
+   ============================================================================ */
+
+.goal-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.goal-option input[type="checkbox"] {
+  display: none;
+}
+
+.goal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--bg-cream);
+  border: 2px solid var(--border-gray);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.goal-card:hover {
+  border-color: var(--brand-sage);
+  background: #f0efed;
+}
+
+.goal-option input:checked + .goal-card {
+  border-color: var(--brand-sage);
+  background: var(--brand-sage);
+  color: white;
+}
+
+.goal-card i {
+  width: 40px;
+  height: 40px;
+  color: var(--brand-sage);
+}
+
+.goal-option input:checked + .goal-card i {
+  color: white;
+}
+
+/* ============================================================================
+   STRUGGLE OPTIONS
+   ============================================================================ */
+
+.struggle-options {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.struggle-option input[type="radio"] {
+  display: none;
+}
+
+.struggle-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--bg-cream);
+  border: 2px solid var(--border-gray);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.struggle-card:hover {
+  border-color: var(--brand-sage);
+  background: #f0efed;
+}
+
+.struggle-option input:checked + .struggle-card {
+  border-color: var(--brand-sage);
+  background: var(--brand-sage);
+  color: white;
+}
+
+.struggle-card i {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  color: var(--brand-sage);
+}
+
+.struggle-option input:checked + .struggle-card i {
+  color: white;
+}
+
+.struggle-content h4 {
+  font-size: 1.2em;
+  margin-bottom: 4px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.struggle-content p {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.struggle-option input:checked + .struggle-card .struggle-content p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================================================
+   BASELINE QUESTIONS
+   ============================================================================ */
+
+.baseline-questions {
+  display: grid;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.baseline-question > label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.number-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 16px 0;
+}
+
+.number-selector button {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 2px solid var(--brand-sage);
+  background: white;
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--brand-sage);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.number-selector button:hover {
+  background: var(--brand-sage);
+  color: white;
+}
+
+.number-selector > span {
+  font-size: 2em;
+  font-weight: 700;
+  color: var(--brand-sage);
+  min-width: 60px;
+  text-align: center;
+}
+
+.number-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
+input[type="range"] {
+  width: 100%;
+  margin: 16px 0;
+  accent-color: var(--brand-sage);
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.range-value {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 1.1em;
+}
+
+.range-value strong {
+  color: var(--brand-sage);
+  font-size: 1.3em;
+}
+
+.radio-group {
+  display: grid;
+  gap: 12px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-cream);
+  border: 2px solid var(--border-gray);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: normal;
+}
+
+.radio-group label:hover {
+  border-color: var(--brand-sage);
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 12px;
+  accent-color: var(--brand-sage);
+}
+
+.radio-group input:checked + span {
+  font-weight: 600;
+}
+
+/* ============================================================================
+   RECOMMENDATION
+   ============================================================================ */
+
+.recommendation-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  background: linear-gradient(135deg, var(--brand-sage), var(--brand-sage-light));
+  color: white;
+  border-radius: 16px;
+  margin: 32px 0;
+}
+
+.recommended-step-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recommended-step-icon i {
+  width: 48px;
+  height: 48px;
+  color: white;
+}
+
+.recommended-step-content h3 {
+  font-size: 1.8em;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.recommended-step-content p {
+  font-size: 1.1em;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.recommendation-explanation {
+  padding: 24px;
+  background: var(--bg-cream);
+  border-radius: 12px;
+  border-left: 4px solid var(--brand-sage);
+}
+
+.recommendation-explanation p {
+  font-size: 1.05em;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Phase Overview */
+.phase-1-overview {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--bg-cream);
+  border-radius: 12px;
+}
+
+.phase-1-overview h3 {
+  font-size: 1.4em;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.phase-1-overview > p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.unlock-requirements {
+  display: grid;
+  gap: 12px;
+}
+
+.unlock-card {
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid var(--border-gray);
+}
+
+.unlock-card.locked {
+  opacity: 0.7;
+}
+
+.unlock-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.unlock-header i {
+  width: 20px;
+  height: 20px;
+  color: var(--text-secondary);
+}
+
+.unlock-requirement {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unlock-requirement span {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   HABIT SELECTION
+   ============================================================================ */
+
+.habit-selection-group h3 {
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.habit-checkboxes {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.habit-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.habit-checkbox-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-cream);
+  border: 2px solid var(--border-gray);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.habit-checkbox-content:hover {
+  border-color: var(--brand-sage);
+  background: #f0efed;
+}
+
+.habit-checkbox input:checked + .habit-checkbox-content {
+  border-color: var(--brand-sage);
+  background: var(--brand-sage);
+  color: white;
+}
+
+.habit-checkbox-content i {
+  width: 24px;
+  height: 24px;
+  color: var(--brand-sage);
+  flex-shrink: 0;
+}
+
+.habit-checkbox input:checked + .habit-checkbox-content i {
+  color: white;
+}
+
+.habit-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #FFF9E6;
+  border: 1px solid #FFE66D;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.habit-tip i {
+  width: 24px;
+  height: 24px;
+  color: #D4AF37;
+  flex-shrink: 0;
+}
+
+.habit-tip p {
+  margin: 0;
+  font-size: 0.95em;
+}
+
+.selected-count {
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--brand-sage);
+  margin-bottom: 24px;
+}
+
+/* ============================================================================
+   TUTORIAL
+   ============================================================================ */
+
+.tutorial-demo {
+  padding: 32px;
+  background: var(--bg-cream);
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.tutorial-step {
+  margin-bottom: 24px;
+}
+
+.tutorial-annotation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: var(--brand-sage);
+}
+
+.tutorial-annotation i {
+  width: 24px;
+  height: 24px;
+}
+
+.tutorial-checklist {
+  display: grid;
+  gap: 8px;
+}
+
+.tutorial-check-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+}
+
+.tutorial-check-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  accent-color: var(--brand-sage);
+  cursor: pointer;
+}
+
+.tutorial-check-item label {
+  cursor: pointer;
+}
+
+.tutorial-success {
+  text-align: center;
+  padding: 32px;
+  background: white;
+  border-radius: 12px;
+}
+
+.tutorial-success h3 {
+  font-size: 1.3em;
+  margin-bottom: 12px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.xp-earned {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--brand-sage);
+  color: white;
+  border-radius: 8px;
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.streak-demo-days {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.streak-day {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+  background: var(--bg-cream);
+  border: 2px solid var(--border-gray);
+  color: var(--text-secondary);
+}
+
+.streak-day.filled {
+  background: var(--brand-sage);
+  border-color: var(--brand-sage);
+  color: white;
+}
+
+.streak-demo-label {
+  text-align: center;
+  font-weight: 600;
+  color: var(--brand-sage);
+  font-size: 1.05em;
+}
+
+.tutorial-streak-demo {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+}
+
+/* ============================================================================
+   COMMITMENT
+   ============================================================================ */
+
+.commitment-card {
+  padding: 32px;
+  background: var(--bg-cream);
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+.commitment-statement {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.commitment-statement h3 {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.commitment-statement p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.reminder-setup {
+  margin-bottom: 24px;
+}
+
+.reminder-setup label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.reminder-setup input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1em;
+}
+
+.helper-text {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.first-week-checklist {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+.first-week-checklist h3 {
+  font-size: 1.3em;
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* ============================================================================
+   NAVIGATION
+   ============================================================================ */
+
+.onboarding-nav,
+.tutorial-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.btn-large {
+  width: 100%;
+  justify-content: center;
+  padding: 16px 32px;
+  font-size: 1.1em;
+}
+
+/* ============================================================================
+   VALIDATION MESSAGE
+   ============================================================================ */
+
+.validation-msg {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e74c3c;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: onb-slideIn 0.3s ease-out;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .onboarding-screen {
+    padding: 32px 24px;
+  }
+
+  .onboarding-screen h1 {
+    font-size: 2em;
+  }
+
+  .onboarding-screen h2 {
+    font-size: 1.6em;
+  }
+
+  .goal-options {
+    grid-template-columns: 1fr;
+  }
+
+  .phase-preview-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .recommendation-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .streak-demo-days {
+    gap: 4px;
+  }
+
+  .streak-day {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8em;
+  }
+}

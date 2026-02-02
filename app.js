@@ -279,159 +279,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ============================================================================
-// PROGRESS CALCULATION FUNCTIONS
-// ============================================================================
-
-function calculateSleepProgress() {
-  const allData = getAllSleepData();
-  const dates = Object.keys(allData);
-  if (dates.length === 0) return 0;
-  
-  const completedDates = dates.filter(d => {
-    const checks = allData[d].checks?.filter(c => c).length || 0;
-    return checks >= 3; // 3+ habits = completed day
-  });
-  
-  return (completedDates.length / dates.length) * 100;
-}
-
-function calculateStressProgress() {
-  const allData = getAllStressData();
-  const dates = Object.keys(allData);
-  
-  // 14-day program
-  return Math.min((dates.length / 14) * 100, 100);
-}
-
-function calculateEnergyProgress() {
-  const allData = getAllEnergyData();
-  const dates = Object.keys(allData);
-  if (dates.length === 0) return 0;
-  
-  const completedDates = dates.filter(d => {
-    const checks = allData[d].checks?.filter(c => c).length || 0;
-    return checks >= 2; // 2+ habits = completed day
-  });
-  
-  return (completedDates.length / dates.length) * 100;
-}
-
-function calculateMindsetProgress() {
-  const allData = getAllMindsetData();
-  const dates = Object.keys(allData);
-  const completedDates = dates.filter(d => {
-    const data = allData[d];
-    return data.situation && data.situation.trim() !== '';
-  });
-  
-  // 12-day program
-  return Math.min((completedDates.length / 12) * 100, 100);
-}
-
-function calculateMovementProgress() {
-  const allData = getAllMovementData();
-  const dates = Object.keys(allData);
-  if (dates.length === 0) return 0;
-  
-  const completedDates = dates.filter(d => {
-    const data = allData[d];
-    return data.type && data.type.trim() !== '';
-  });
-  
-  return (completedDates.length / dates.length) * 100;
-}
-
-function calculateNutritionProgress() {
-  if (nutritionHabits.length === 0) return 0;
-  
-  const allData = getAllNutritionData();
-  const dates = Object.keys(allData);
-  if (dates.length === 0) return 0;
-  
-  const completedDates = dates.filter(d => {
-    const checks = allData[d].checks?.filter(c => c).length || 0;
-    return checks >= nutritionHabits.length * 0.5; // 50%+ habits = completed
-  });
-  
-  return (completedDates.length / dates.length) * 100;
-}
-
-// Placeholders for steps 7-9
-function calculateProductivityProgress() {
-  return 0;
-}
-
-function calculateBoundaryProgress() {
-  return 0;
-}
-
-function calculatePurposeProgress() {
-  return 0;
-}
+// Progress calculation functions removed - dashboard now shows streaks instead of percentages
 
 // ============================================================================
 // DASHBOARD UPDATE LOGIC
 // ============================================================================
 
 function updateDashboard() {
-  // Calculate progress for all steps
-  const sleepProgress = calculateSleepProgress();
-  const stressProgress = calculateStressProgress();
-  const energyProgress = calculateEnergyProgress();
-  const mindsetProgress = calculateMindsetProgress();
-  const movementProgress = calculateMovementProgress();
-  const nutritionProgress = calculateNutritionProgress();
-  const productivityProgress = calculateProductivityProgress();
-  const boundaryProgress = calculateBoundaryProgress();
-  const purposeProgress = calculatePurposeProgress();
-  
-  const allProgress = [
-    sleepProgress,
-    stressProgress,
-    energyProgress,
-    mindsetProgress,
-    movementProgress,
-    nutritionProgress,
-    productivityProgress,
-    boundaryProgress,
-    purposeProgress
-  ];
-  
-  // Overall progress
-  const overall = Math.round(allProgress.reduce((a, b) => a + b, 0) / 9);
-  const overallEl = document.getElementById('overall-progress');
-  if (overallEl) overallEl.textContent = overall + '%';
-  
-  // Update phase cards
-  updatePhaseCard('sleep', sleepProgress);
-  updatePhaseCard('stress', stressProgress);
-  updatePhaseCard('energy', energyProgress);
-  updatePhaseCard('mindset', mindsetProgress);
-  updatePhaseCard('movement', movementProgress);
-  updatePhaseCard('nutrition', nutritionProgress);
-  updatePhaseCard('productivity', productivityProgress);
-  updatePhaseCard('boundary', boundaryProgress);
-  updatePhaseCard('purpose', purposeProgress);
-  
-  // Steps completed (>75% = completed)
-  const completed = allProgress.filter(p => p >= 75).length;
-  const stepsEl = document.getElementById('steps-completed');
-  if (stepsEl) stepsEl.textContent = completed + '/9';
-  
-  // Calculate longest streak
-  const streaks = [
-    calculateSleepStreak(),
-    calculateStressStreak(),
-    calculateEnergyStreak(),
-    calculateMindsetStreak(),
-    calculateMovementStreak(),
-    calculateNutritionStreak()
-  ];
+  // Calculate streaks for all steps
+  const sleepStreak = calculateSleepStreak();
+  const stressStreak = calculateStressStreak();
+  const energyStreak = calculateEnergyStreak();
+  const mindsetStreak = calculateMindsetStreak();
+  const movementStreak = calculateMovementStreak();
+  const nutritionStreak = calculateNutritionStreak();
+
+  const streaks = [sleepStreak, stressStreak, energyStreak, mindsetStreak, movementStreak, nutritionStreak];
+
+  // Update dashboard stat cards
   const longestStreak = Math.max(...streaks, 0);
   const streakEl = document.getElementById('dash-current-streak');
   if (streakEl) streakEl.textContent = longestStreak;
-  
+
   // Calculate total days active
   const allDates = new Set();
   [
@@ -446,27 +315,70 @@ function updateDashboard() {
   });
   const daysActiveEl = document.getElementById('dash-days-active');
   if (daysActiveEl) daysActiveEl.textContent = allDates.size;
+
+  // Active habits count
+  let activeHabits = sleepHabits.length + energyHabits.length + nutritionHabits.length;
+  // Stress has variable tasks, mindset is 1 journal, movement is 1 session
+  activeHabits += 2; // stress + mindset + movement simplified
+  const activeHabitsEl = document.getElementById('dash-active-habits');
+  if (activeHabitsEl) activeHabitsEl.textContent = activeHabits;
+
+  // Total check-ins
+  let totalCheckins = 0;
+  const sleepData = getAllSleepData();
+  Object.values(sleepData).forEach(d => { totalCheckins += (d.checks?.filter(c => c).length || 0); });
+  const energyData = getAllEnergyData();
+  Object.values(energyData).forEach(d => { totalCheckins += (d.checks?.filter(c => c).length || 0); });
+  const nutritionData = getAllNutritionData();
+  Object.values(nutritionData).forEach(d => { totalCheckins += (d.checks?.filter(c => c).length || 0); });
+  const stressData = getAllStressData();
+  Object.values(stressData).forEach(d => { if (d.completed) totalCheckins++; });
+  const mindsetData = getAllMindsetData();
+  Object.values(mindsetData).forEach(d => { if (d.situation && d.situation.trim()) totalCheckins++; });
+  const movementData = getAllMovementData();
+  Object.values(movementData).forEach(d => { if (d.type && d.type.trim()) totalCheckins++; });
+
+  const totalCheckinsEl = document.getElementById('dash-total-checkins');
+  if (totalCheckinsEl) totalCheckinsEl.textContent = totalCheckins;
+
+  // Update step card streak displays
+  updateStepStreak('sleep', sleepStreak);
+  updateStepStreak('stress', stressStreak);
+  updateStepStreak('energy', energyStreak);
+  updateStepStreak('mindset', mindsetStreak);
+  updateStepStreak('movement', movementStreak);
+  updateStepStreak('nutrition', nutritionStreak);
+
+  // Update phase summary stats
+  const p1Sleep = document.getElementById('phase1-sleep-streak');
+  const p1Stress = document.getElementById('phase1-stress-streak');
+  const p1Energy = document.getElementById('phase1-energy-streak');
+  if (p1Sleep) p1Sleep.textContent = sleepStreak + 'd';
+  if (p1Stress) p1Stress.textContent = stressStreak + 'd';
+  if (p1Energy) p1Energy.textContent = energyStreak + 'd';
+
+  const p2Mindset = document.getElementById('phase2-mindset-streak');
+  const p2Movement = document.getElementById('phase2-movement-streak');
+  const p2Nutrition = document.getElementById('phase2-nutrition-streak');
+  if (p2Mindset) p2Mindset.textContent = mindsetStreak + 'd';
+  if (p2Movement) p2Movement.textContent = movementStreak + 'd';
+  if (p2Nutrition) p2Nutrition.textContent = nutritionStreak + 'd';
+
+  // Update nav streaks
+  updateNavStreak('sleep', sleepStreak);
+  updateNavStreak('stress', stressStreak);
+  updateNavStreak('energy', energyStreak);
+  updateNavStreak('mindset', mindsetStreak);
+  updateNavStreak('movement', movementStreak);
+  updateNavStreak('nutrition', nutritionStreak);
+
+  // Update XP display
+  updateXPDisplay();
+
+  // Update phase lock states
+  updatePhaseLocks();
   
-  // Update phase progress bars
-  const phase1Progress = (sleepProgress + stressProgress + energyProgress) / 3;
-  const phase2Progress = (mindsetProgress + movementProgress + nutritionProgress) / 3;
-  
-  const phase1Bar = document.getElementById('phase1-progress-bar');
-  const phase1Text = document.getElementById('phase1-progress-text');
-  if (phase1Bar) phase1Bar.style.width = Math.round(phase1Progress) + '%';
-  if (phase1Text) phase1Text.textContent = Math.round(phase1Progress) + '%';
-  
-  const phase2Bar = document.getElementById('phase2-progress-bar');
-  const phase2Text = document.getElementById('phase2-progress-text');
-  if (phase2Bar) phase2Bar.style.width = Math.round(phase2Progress) + '%';
-  if (phase2Text) phase2Text.textContent = Math.round(phase2Progress) + '%';
-  
-  // Phase 3 progress
-  const phase3Progress = (productivityProgress + boundaryProgress + purposeProgress) / 3;
-  const phase3Bar = document.getElementById('phase3-progress-bar');
-  const phase3Text = document.getElementById('phase3-progress-text');
-  if (phase3Bar) phase3Bar.style.width = Math.round(phase3Progress) + '%';
-  if (phase3Text) phase3Text.textContent = Math.round(phase3Progress) + '%';
+
 
   // Update today's focus
   updateTodaysFocus();
@@ -476,15 +388,17 @@ function updateDashboard() {
   updateXPDisplay();
 }
 
-function updatePhaseCard(step, progress) {
-  const progressValue = Math.round(progress);
-  
-  const bar = document.getElementById(step + '-progress-bar');
-  const text = document.getElementById(step + '-progress-text');
-  const navProgress = document.getElementById('nav-' + step + '-progress');
-  
-  if (text) text.textContent = progressValue + '%';
-  if (navProgress) navProgress.textContent = progressValue + '%';
+function updateStepStreak(step, streak) {
+  const streakEl = document.getElementById(step + '-streak-display');
+  if (streakEl) streakEl.textContent = streak;
+}
+
+function updateNavStreak(step, streak) {
+  const navEl = document.getElementById('nav-' + step + '-streak');
+  if (navEl) {
+    navEl.innerHTML = `<i data-lucide="flame" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> ${streak}`;
+    setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
+  }
 }
 
 // UPDATED: Today's Focus with Icons (Issue #1)
@@ -515,63 +429,76 @@ function updateTodaysFocus() {
   const nutritionComplete = nutritionHabits.length > 0 && 
     (nutritionData.checks?.filter(c => c).length || 0) >= nutritionHabits.length * 0.5;
   
-  // Build suggestions for incomplete items
+  // Build suggestions for incomplete items - show specific habits due
   if (!sleepComplete) {
+    const sleepChecked = sleepData.checks?.filter(c => c).length || 0;
     focusItems.push({
-      step: 'Sleep Sanctuary',
+      step: `${sleepChecked}/5 habits logged`,
       icon: 'moon',
-      title: 'Log your sleep habits for today',
+      title: 'Log your sleep habits',
       link: 'sleep'
     });
   }
-  
+
   if (!stressComplete) {
     focusItems.push({
-      step: 'Stress Soothers',
+      step: 'Practice not yet logged',
       icon: 'wind',
-      title: 'Complete today\'s stress practice',
+      title: 'Log your stress practice',
       link: 'stress'
     });
   }
-  
+
   if (!energyComplete) {
+    const energyChecked = energyData.checks?.filter(c => c).length || 0;
     focusItems.push({
-      step: 'Energy Essentials',
+      step: `${energyChecked}/3 habits logged`,
       icon: 'zap',
-      title: 'Track your energy habits',
+      title: 'Log your energy habits',
       link: 'energy'
     });
   }
-  
+
   if (!mindsetComplete) {
     focusItems.push({
-      step: 'Mindset Mastery',
+      step: 'Journal not yet logged',
       icon: 'brain',
-      title: 'Journal about today\'s mindset',
+      title: 'Log your mindset journal',
       link: 'mindset'
     });
   }
-  
+
   if (!movementComplete) {
     focusItems.push({
-      step: 'Movement Momentum',
+      step: 'Session not yet logged',
       icon: 'activity',
-      title: 'Log today\'s movement session',
+      title: 'Log your movement session',
       link: 'movement'
     });
   }
-  
+
   if (!nutritionComplete && nutritionHabits.length > 0) {
+    const nutrChecked = nutritionData.checks?.filter(c => c).length || 0;
     focusItems.push({
-      step: 'Nutrition Navigation',
+      step: `${nutrChecked}/${nutritionHabits.length} habits logged`,
       icon: 'apple',
-      title: 'Check off your nutrition habits',
+      title: 'Log your nutrition habits',
       link: 'nutrition'
     });
   }
   
-  // If everything is complete, show celebration with icon
+  // If everything is complete, show celebration with streak info
   if (focusItems.length === 0) {
+    const streaks = [
+      calculateSleepStreak(),
+      calculateStressStreak(),
+      calculateEnergyStreak(),
+      calculateMindsetStreak(),
+      calculateMovementStreak(),
+      calculateNutritionStreak()
+    ];
+    const longestStreak = Math.max(...streaks, 0);
+
     container.innerHTML = `
       <div style="padding: 32px; text-align: center;">
         <div style="margin-bottom: 16px;">
@@ -579,8 +506,10 @@ function updateTodaysFocus() {
             <i data-lucide="check-circle" style="color: white;"></i>
           </div>
         </div>
-        <div style="font-size: 1.3em; font-weight: 600; color: var(--brand-sage); margin-bottom: 8px;">All Caught Up!</div>
-        <div style="color: var(--text-secondary); font-size: 1.05em;">You've completed all your trackers for today. Excellent work!</div>
+        <div style="font-size: 1.3em; font-weight: 600; color: var(--brand-sage); margin-bottom: 8px;">All Habits Logged!</div>
+        <div style="color: var(--text-secondary); font-size: 1.05em;">
+          ${longestStreak > 0 ? `You're on a ${longestStreak}-day streak. Keep it going!` : 'Great start! Come back tomorrow to build your streak.'}
+        </div>
       </div>
     `;
     
@@ -870,6 +799,13 @@ function updateTodaySleepTracker() {
   const notes = document.getElementById('today-sleep-notes')?.value || '';
 
   saveSleepDataForDate(todayKey, { checks, hours, bedtime, wake, notes });
+
+  // Award XP if habits logged
+  if (checks.filter(c => c).length >= 3) {
+    awardDailyXP('sleep');
+    awardStreakXP(calculateSleepStreak(), 'sleep');
+  }
+
   calculateSleepStats();
   renderSleepCalendar();
   renderSleepHabitDashboard();
@@ -1225,15 +1161,14 @@ function updateTodayStressTracker() {
   const notes = document.getElementById('today-stress-notes')?.value || '';
   const completed = tasks.every(t => t);
 
-  // Bonus XP for daily reflection (notes)
-  const reflectionKey = `stress-reflection-${todayKey}`;
-  if (notes.trim().length > 10) {
-    earnBonusXP(reflectionKey, XP_PER_REFLECTION);
-  } else {
-    deductBonusXP(reflectionKey);
+  saveStressDataForDate(todayKey, { tasks, notes, completed });
+
+  // Award XP if practice completed
+  if (completed) {
+    awardDailyXP('stress');
+    awardStreakXP(calculateStressStreak(), 'stress');
   }
 
-  saveStressDataForDate(todayKey, { tasks, notes, completed });
   calculateStressStats();
   renderStressJourney();
 
@@ -1500,6 +1435,13 @@ function updateTodayEnergyTracker() {
   const notes = document.getElementById('today-energy-notes')?.value || '';
 
   saveEnergyDataForDate(todayKey, { checks, energyLevel, notes });
+
+  // Award XP if habits logged
+  if (checks.filter(c => c).length >= 2) {
+    awardDailyXP('energy');
+    awardStreakXP(calculateEnergyStreak(), 'energy');
+  }
+
   calculateEnergyStats();
   renderEnergyCalendar();
   renderEnergyHabitDashboard();
@@ -1836,6 +1778,13 @@ function updateTodayMindset() {
   }
 
   saveMindsetDataForDate(todayKey, { situation, story, type });
+
+  // Award XP if journal entry logged
+  if (situation && situation.trim()) {
+    awardDailyXP('mindset');
+    awardStreakXP(calculateMindsetStreak(), 'mindset');
+  }
+
   calculateMindsetStats();
 }
 
@@ -2064,6 +2013,13 @@ function updateTodayMovement() {
   }
 
   saveMovementDataForDate(todayKey, { type, duration, before, after, notes });
+
+  // Award XP if movement logged
+  if (type && type.trim()) {
+    awardDailyXP('movement');
+    awardStreakXP(calculateMovementStreak(), 'movement');
+  }
+
   calculateMovementStats();
   renderMovementCalendar();
 }
@@ -2354,6 +2310,13 @@ function updateTodayNutrition() {
   const notes = document.getElementById('today-nutr-notes')?.value || '';
 
   saveNutritionDataForDate(todayKey, { checks, notes });
+
+  // Award XP if enough habits logged
+  if (checks.filter(c => c).length >= nutritionHabits.length * 0.5) {
+    awardDailyXP('nutrition');
+    awardStreakXP(calculateNutritionStreak(), 'nutrition');
+  }
+
   calculateNutritionStats();
   renderNutritionCalendar();
   renderNutritionHabitDashboard();
@@ -2603,295 +2566,139 @@ function calculateNutritionStats() {
 }
 
 // ============================================================================
-// GAMIFICATION ENGINE - XP, LEVELS, CONFETTI, STREAKS, UNLOCKS
+// XP & PHASE UNLOCK SYSTEM
 // ============================================================================
 
-// --- XP & Leveling ---
+function getUserXP() {
+  return parseInt(localStorage.getItem('userXP') || '0');
+}
 
-const XP_PER_HABIT = 10;
-const XP_PER_REFLECTION = 50;
-const XP_PER_WORKOUT = 50;
-const XP_PER_LEVEL = 500;
+function addXP(amount, reason) {
+  const currentXP = getUserXP();
+  const newXP = currentXP + amount;
+  localStorage.setItem('userXP', newXP.toString());
 
-function getXPData() {
-  const saved = localStorage.getItem('gamificationXP');
-  if (!saved) return { totalXP: 0, checkedItems: {} };
-  try {
-    return JSON.parse(saved);
-  } catch (e) {
-    return { totalXP: 0, checkedItems: {} };
+  checkPhaseUnlocks(newXP);
+  showXPNotification(amount, reason);
+  updateXPDisplay();
+}
+
+function checkPhaseUnlocks(xp) {
+  const phase2Unlocked = localStorage.getItem('phase2Unlocked') === 'true';
+  const phase3Unlocked = localStorage.getItem('phase3Unlocked') === 'true';
+
+  if (xp >= 100 && !phase2Unlocked) {
+    localStorage.setItem('phase2Unlocked', 'true');
+    showCelebration('Phase 2 Unlocked!', 'You\'ve unlocked Rebuild Resilience - Mindset, Movement, and Nutrition are now available!');
+    updatePhaseLocks();
+  }
+
+  if (xp >= 250 && !phase3Unlocked) {
+    localStorage.setItem('phase3Unlocked', 'true');
+    showCelebration('Phase 3 Unlocked!', 'You\'ve unlocked Reclaim Purpose - Productivity, Boundaries, and Purpose are now available!');
+    updatePhaseLocks();
   }
 }
 
-function saveXPData(data) {
-  localStorage.setItem('gamificationXP', JSON.stringify(data));
-}
+function showXPNotification(amount, reason) {
+  const notification = document.createElement('div');
+  notification.className = 'xp-notification';
+  notification.innerHTML = `
+    <div class="xp-notif-icon">
+      <i data-lucide="star"></i>
+    </div>
+    <div>
+      <div class="xp-notif-amount">+${amount} XP</div>
+      <div class="xp-notif-reason">${reason}</div>
+    </div>
+  `;
 
-function getCurrentLevel() {
-  const data = getXPData();
-  return Math.floor(data.totalXP / XP_PER_LEVEL) + 1;
-}
+  document.body.appendChild(notification);
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 
-function getXPForCurrentLevel() {
-  const data = getXPData();
-  return data.totalXP % XP_PER_LEVEL;
-}
-
-// Earn XP for a habit checkbox (idempotent: tracks by unique key)
-function earnHabitXP(uniqueKey) {
-  const data = getXPData();
-  if (data.checkedItems[uniqueKey]) return; // Already earned
-  data.checkedItems[uniqueKey] = XP_PER_HABIT;
-  data.totalXP += XP_PER_HABIT;
-  saveXPData(data);
-  playDingSound();
-  pulseElement(uniqueKey);
-  updateXPDisplay();
-  updateMilestoneUnlocks();
-}
-
-// Deduct XP when a habit is unchecked
-function deductHabitXP(uniqueKey) {
-  const data = getXPData();
-  if (!data.checkedItems[uniqueKey]) return; // Not earned
-  data.totalXP = Math.max(0, data.totalXP - data.checkedItems[uniqueKey]);
-  delete data.checkedItems[uniqueKey];
-  saveXPData(data);
-  updateXPDisplay();
-  updateMilestoneUnlocks();
-}
-
-// Earn XP for a reflection or workout (idempotent)
-function earnBonusXP(uniqueKey, amount) {
-  const data = getXPData();
-  if (data.checkedItems[uniqueKey]) return;
-  data.checkedItems[uniqueKey] = amount;
-  data.totalXP += amount;
-  saveXPData(data);
-  playDingSound();
-  updateXPDisplay();
-  updateMilestoneUnlocks();
-}
-
-// Deduct bonus XP when content is cleared
-function deductBonusXP(uniqueKey) {
-  const data = getXPData();
-  if (!data.checkedItems[uniqueKey]) return;
-  data.totalXP = Math.max(0, data.totalXP - data.checkedItems[uniqueKey]);
-  delete data.checkedItems[uniqueKey];
-  saveXPData(data);
-  updateXPDisplay();
-  updateMilestoneUnlocks();
+  setTimeout(() => { notification.classList.add('show'); }, 100);
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => { notification.remove(); }, 300);
+  }, 3000);
 }
 
 function updateXPDisplay() {
-  const data = getXPData();
-  const level = Math.floor(data.totalXP / XP_PER_LEVEL) + 1;
-  const xpInLevel = data.totalXP % XP_PER_LEVEL;
-  const pct = (xpInLevel / XP_PER_LEVEL) * 100;
+  const xp = getUserXP();
+  const xpDisplay = document.getElementById('user-xp-display');
+  if (xpDisplay) xpDisplay.textContent = xp;
 
-  const badge = document.getElementById('xp-level-badge');
-  const totalDisplay = document.getElementById('xp-total-display');
-  const nextLevel = document.getElementById('xp-next-level');
-  const barFill = document.getElementById('xp-bar-fill');
+  // Update phase 2 unlock bar
+  const phase2Unlocked = localStorage.getItem('phase2Unlocked') === 'true';
+  const phase2Bar = document.getElementById('phase2-unlock-progress');
+  const phase2Label = document.getElementById('phase2-xp-label');
+  const phase2Section = document.getElementById('phase2-unlock-section');
 
-  if (badge) badge.textContent = `Level ${level}`;
-  if (totalDisplay) totalDisplay.textContent = `${data.totalXP} XP`;
-  if (nextLevel) nextLevel.textContent = `${XP_PER_LEVEL - xpInLevel} XP to Level ${level + 1}`;
-  if (barFill) barFill.style.width = pct + '%';
-}
-
-// --- Sound Feedback ---
-
-function playDingSound() {
-  try {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-    oscillator.frequency.setValueAtTime(1174.66, audioCtx.currentTime + 0.08); // D6
-
-    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-
-    oscillator.start(audioCtx.currentTime);
-    oscillator.stop(audioCtx.currentTime + 0.25);
-  } catch (e) {
-    // Silently fail if audio not available
+  if (phase2Unlocked) {
+    if (phase2Section) phase2Section.style.display = 'none';
+  } else {
+    if (phase2Section) phase2Section.style.display = 'flex';
+    const progress = Math.min((xp / 100) * 100, 100);
+    if (phase2Bar) phase2Bar.style.width = progress + '%';
+    if (phase2Label) phase2Label.textContent = `${xp} / 100 XP to unlock`;
   }
 }
 
-// --- Visual Pulse Feedback ---
+function updatePhaseLocks() {
+  const phase2Unlocked = localStorage.getItem('phase2Unlocked') === 'true';
+  const phase3Unlocked = localStorage.getItem('phase3Unlocked') === 'true';
 
-function pulseElement(uniqueKey) {
-  // Find the closest checklist-item by traversing from the checkbox
-  const parts = uniqueKey.split('-');
-  // Try to find the checkbox element that corresponds to this key
-  const checkboxes = document.querySelectorAll('.checklist-item');
-  checkboxes.forEach(item => {
-    const cb = item.querySelector('input[type="checkbox"]');
-    if (cb && cb.checked) {
-      // Brief pulse for recently checked items
-      item.classList.add('habit-pulse');
-      setTimeout(() => item.classList.remove('habit-pulse'), 600);
-    }
-  });
-}
-
-// --- Confetti System ---
-
-function fireConfetti() {
-  if (typeof confetti !== 'function') return;
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 },
-    colors: ['#8c9d7b', '#9bb087', '#D4AF37', '#ffffff']
-  });
-}
-
-function checkStepConfetti(stepName, completionPct) {
-  if (completionPct >= 100) {
-    const confettiKey = `confetti-${stepName}-${getTodayKey()}`;
-    const fired = localStorage.getItem(confettiKey);
-    if (!fired) {
-      localStorage.setItem(confettiKey, 'true');
-      fireConfetti();
-    }
-  }
-}
-
-// --- Flame Streak System ---
-
-function getStreakData() {
-  const saved = localStorage.getItem('gamificationStreak');
-  if (!saved) return { shields: 0, shieldGrantedAtStreak: 0 };
-  try {
-    return JSON.parse(saved);
-  } catch (e) {
-    return { shields: 0, shieldGrantedAtStreak: 0 };
-  }
-}
-
-function saveStreakData(data) {
-  localStorage.setItem('gamificationStreak', JSON.stringify(data));
-}
-
-function updateStreakDisplay() {
-  const streakEl = document.getElementById('dash-current-streak');
-  const streak = parseInt(streakEl?.textContent || '0');
-  const flameIcon = document.getElementById('streak-flame-icon');
-  const shieldBadge = document.getElementById('streak-shield-badge');
-  const shieldCount = document.getElementById('streak-shield-count');
-  const streakData = getStreakData();
-
-  // Grant shield at 7-day streak (only once per 7-streak milestone)
-  if (streak >= 7 && streakData.shieldGrantedAtStreak < streak) {
-    const newShields = Math.floor(streak / 7);
-    if (newShields > streakData.shields) {
-      streakData.shields = newShields;
-      streakData.shieldGrantedAtStreak = streak;
-      saveStreakData(streakData);
-    }
+  // Phase 2 lock
+  const phase2Lock = document.getElementById('phase2-lock');
+  const phase2Card = document.getElementById('phase2-card');
+  if (phase2Unlocked) {
+    if (phase2Lock) phase2Lock.style.display = 'none';
+    if (phase2Card) phase2Card.classList.remove('locked');
+    document.querySelectorAll('.phase2-nav').forEach(el => el.classList.remove('phase-locked'));
+    document.querySelectorAll('.phase2-step').forEach(el => {
+      el.style.opacity = '1';
+      el.style.pointerEvents = 'auto';
+    });
+  } else {
+    if (phase2Lock) phase2Lock.style.display = 'inline';
+    if (phase2Card) phase2Card.classList.add('locked');
+    document.querySelectorAll('.phase2-nav').forEach(el => el.classList.add('phase-locked'));
+    document.querySelectorAll('.phase2-step').forEach(el => {
+      el.style.opacity = '0.5';
+      el.style.pointerEvents = 'none';
+    });
   }
 
-  // Update flame visual
-  if (flameIcon) {
-    if (streak >= 3) {
-      flameIcon.classList.add('flame-active');
-      flameIcon.classList.remove('flame-cold');
+  // Phase 3 lock
+  document.querySelectorAll('.phase3-nav').forEach(el => {
+    if (phase3Unlocked) {
+      el.classList.remove('phase-locked');
     } else {
-      flameIcon.classList.remove('flame-active');
-      flameIcon.classList.add('flame-cold');
-    }
-  }
-
-  // Update shield badge
-  if (shieldBadge && shieldCount) {
-    if (streakData.shields > 0) {
-      shieldBadge.style.display = 'inline-flex';
-      shieldCount.textContent = streakData.shields;
-    } else {
-      shieldBadge.style.display = 'none';
-    }
-  }
-}
-
-// Grace day logic: called when recalculating streak,
-// returns true if a shield was consumed to save the streak
-function applyStreakShield(wouldBreak) {
-  if (!wouldBreak) return false;
-  const data = getStreakData();
-  if (data.shields > 0) {
-    data.shields--;
-    saveStreakData(data);
-    return true; // Streak preserved
-  }
-  return false; // Streak resets
-}
-
-// --- Milestone Unlock System (Steps 7-9) ---
-
-function updateMilestoneUnlocks() {
-  const level = getCurrentLevel();
-  const isUnlocked = level >= 5;
-  const lockedSteps = ['productivity', 'boundary', 'purpose'];
-
-  lockedSteps.forEach(step => {
-    const card = document.getElementById(`step-card-${step}`);
-    const navLink = document.querySelector(`.nav-link[data-step="${step}"]`);
-
-    if (card) {
-      if (isUnlocked) {
-        card.classList.remove('step-card-locked');
-        card.setAttribute('onclick', `navigateToStep('${step}')`);
-        // Replace locked badge with progress ring
-        const progressEl = card.querySelector('.step-card-progress');
-        if (progressEl && progressEl.querySelector('.locked-badge')) {
-          progressEl.innerHTML = `
-            <div class="progress-ring">
-              <div class="progress-text" id="${step}-progress-text">0%</div>
-            </div>
-          `;
-        }
-      } else {
-        card.classList.add('step-card-locked');
-        card.setAttribute('onclick', `handleLockedStep('${step}')`);
-      }
-    }
-
-    if (navLink) {
-      if (isUnlocked) {
-        navLink.classList.remove('nav-link-locked');
-        navLink.removeAttribute('data-locked');
-        // Replace lock icon with progress text
-        const lockIcon = navLink.querySelector('.nav-lock-icon');
-        if (lockIcon) {
-          lockIcon.outerHTML = `<span class="nav-progress" id="nav-${step}-progress">0%</span>`;
-        }
-      } else {
-        navLink.classList.add('nav-link-locked');
-        navLink.setAttribute('data-locked', 'true');
-      }
+      el.classList.add('phase-locked');
     }
   });
 }
 
-function handleLockedStep(step) {
-  const level = getCurrentLevel();
-  if (level >= 5) {
-    navigateToStep(step);
-    return;
+// XP award helpers - only award once per day per tracker
+function awardDailyXP(trackerKey) {
+  const todayKey = getTodayKey();
+  const xpAwardedKey = `xpAwarded_${trackerKey}_${todayKey}`;
+
+  if (localStorage.getItem(xpAwardedKey)) return; // Already awarded today
+
+  localStorage.setItem(xpAwardedKey, 'true');
+  addXP(10, 'Daily habit logged');
+}
+
+function awardStreakXP(streakDays, trackerKey) {
+  if (streakDays > 0 && streakDays % 7 === 0) {
+    const streakXPKey = `streakXP_${trackerKey}_${streakDays}`;
+    if (!localStorage.getItem(streakXPKey)) {
+      localStorage.setItem(streakXPKey, 'true');
+      addXP(25, `${streakDays}-day streak!`);
+    }
   }
-  showCelebration(
-    'Step Locked',
-    `Reach Level 5 to unlock this step. You're currently Level ${level}. Keep earning XP!`
-  );
+
 }
 
 // ============================================================================
@@ -2899,6 +2706,18 @@ function handleLockedStep(step) {
 // ============================================================================
 
 window.addEventListener('load', () => {
+  // Check if onboarding is complete
+  const onboardingComplete = localStorage.getItem('onboardingComplete');
+  if (onboardingComplete !== 'true') {
+    window.location.href = 'onboarding.html';
+    return;
+  }
+
+  // Initialize XP defaults if not set
+  if (!localStorage.getItem('userXP')) {
+    localStorage.setItem('userXP', '0');
+  }
+
   // Initialize all trackers
   initSleepTracker();
   initStressTracker();
@@ -2906,10 +2725,6 @@ window.addEventListener('load', () => {
   initMindsetTracker();
   initMovementTracker();
   initNutritionTracker();
-
-  // Initialize gamification systems
-  updateXPDisplay();
-  updateMilestoneUnlocks();
 
   // Update dashboard
   updateDashboard();
