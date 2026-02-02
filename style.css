@@ -1043,6 +1043,253 @@ h1,
    UTILITY CLASSES
    ============================================================================ */
 
+/* ============================================================================
+   GAMIFICATION - XP BAR & LEVEL
+   ============================================================================ */
+
+.xp-level-card {
+  background: var(--card-white);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-gray);
+}
+
+.xp-level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.xp-level-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.xp-level-badge {
+  background: linear-gradient(135deg, var(--brand-sage), var(--brand-sage-light));
+  color: white;
+  font-weight: 700;
+  font-size: 0.85em;
+  padding: 4px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.xp-level-xp {
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--text-primary);
+}
+
+.xp-level-next {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.xp-bar-container {
+  height: 12px;
+  background: var(--bg-cream);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-sage), var(--brand-sage-light), #b8d4a3);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  position: relative;
+  box-shadow: 0 0 10px rgba(140, 157, 123, 0.5), 0 0 20px rgba(140, 157, 123, 0.2);
+}
+
+.xp-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: xpShimmer 2s ease-in-out infinite;
+}
+
+@keyframes xpShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ============================================================================
+   GAMIFICATION - FLAME STREAK
+   ============================================================================ */
+
+.streak-card {
+  position: relative;
+}
+
+.streak-flame-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.streak-flame-icon i {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2;
+}
+
+.streak-flame-icon.flame-cold {
+  background: #e8e8e8;
+}
+
+.streak-flame-icon.flame-cold i {
+  color: #999;
+}
+
+.streak-flame-icon.flame-active {
+  background: linear-gradient(135deg, #ff6b35, #ff4500);
+  animation: flamePulse 1.5s ease-in-out infinite;
+}
+
+.streak-flame-icon.flame-active i {
+  color: #fff;
+  filter: drop-shadow(0 0 4px rgba(255, 69, 0, 0.6));
+}
+
+@keyframes flamePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(255, 69, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(255, 69, 0, 0.5);
+  }
+}
+
+.streak-shield-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #D4AF37, #e8c84a);
+  color: #fff;
+  font-size: 0.75em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+.streak-shield-badge i {
+  color: #fff;
+}
+
+/* ============================================================================
+   GAMIFICATION - HABIT PULSE (Green glow on check)
+   ============================================================================ */
+
+.checklist-item.habit-pulse {
+  animation: habitGlow 0.6s ease;
+}
+
+@keyframes habitGlow {
+  0% {
+    background: var(--bg-cream);
+    box-shadow: none;
+  }
+  40% {
+    background: rgba(140, 157, 123, 0.15);
+    box-shadow: 0 0 12px rgba(140, 157, 123, 0.3);
+  }
+  100% {
+    background: var(--bg-cream);
+    box-shadow: none;
+  }
+}
+
+/* ============================================================================
+   GAMIFICATION - LOCKED STEPS
+   ============================================================================ */
+
+.step-card-locked {
+  position: relative;
+  filter: grayscale(0.8);
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  user-select: none;
+}
+
+.step-card-locked:hover {
+  transform: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.step-card-locked .step-card-icon {
+  background: #e0e0e0;
+}
+
+.step-card-locked .step-card-icon i {
+  color: #999;
+}
+
+.locked-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0e0e0;
+  color: #777;
+  font-size: 0.8em;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.locked-badge i {
+  color: #999;
+}
+
+/* Nav link locked state */
+.nav-link-locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-link-locked:hover {
+  background: transparent;
+}
+
+.nav-lock-icon {
+  display: flex;
+  align-items: center;
+}
+
+.nav-lock-icon i {
+  color: var(--text-light);
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
 .text-center {
   text-align: center;
 }
