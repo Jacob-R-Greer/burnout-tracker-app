@@ -53,6 +53,7 @@
 
 .onboarding-screen h2 {
   font-size: 2em;
+  text-align: center;
   margin-bottom: 12px;
   color: var(--text-primary);
   font-weight: 900;

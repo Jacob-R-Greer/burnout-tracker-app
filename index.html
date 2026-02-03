@@ -46,12 +46,15 @@
       </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-section-title">Phase 1: Recover Rhythms</div>
+    <div class="nav-section nav-home">
       <a href="#" class="nav-link active" data-step="dashboard">
         <i data-lucide="home"></i>
         <span>Dashboard</span>
       </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 1: Recover Rhythms</div>
       <a href="#" class="nav-link" data-step="sleep">
         <i data-lucide="moon"></i>
         <span>Sleep Sanctuary</span>
@@ -345,13 +348,30 @@
         </div>
 
         <!-- Phase 3 -->
-        <div class="phase-card">
+        <div class="phase-card locked" id="phase3-card">
           <div class="phase-header">
             <h4>Phase 3: Reclaim Purpose</h4>
-            <span class="phase-progress" id="phase3-progress-text">0%</span>
+            <span class="phase-lock-icon" id="phase3-lock"><i data-lucide="lock"></i></span>
           </div>
-          <div class="phase-bar">
-            <div class="phase-bar-fill" id="phase3-progress-bar" style="width: 0%"></div>
+          <div class="phase-summary">
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase3-productivity-streak">0</div>
+              <div class="phase-stat-label">Productivity</div>
+            </div>
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase3-boundary-streak">0</div>
+              <div class="phase-stat-label">Boundary</div>
+            </div>
+            <div class="phase-stat">
+              <div class="phase-stat-value" id="phase3-purpose-streak">0</div>
+              <div class="phase-stat-label">Purpose</div>
+            </div>
+          </div>
+          <div class="phase-unlock-bar" id="phase3-unlock-section">
+            <div class="xp-bar">
+              <div class="xp-fill" id="phase3-unlock-progress" style="width: 0%"></div>
+            </div>
+            <span class="xp-label" id="phase3-xp-label">0 / 250 XP to unlock</span>
           </div>
         </div>
 
