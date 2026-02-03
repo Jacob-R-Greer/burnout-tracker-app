@@ -2589,13 +2589,13 @@ function checkPhaseUnlocks(xp) {
 
   if (xp >= 100 && !phase2Unlocked) {
     localStorage.setItem('phase2Unlocked', 'true');
-    showCelebration('Phase 2 Unlocked!', 'You\'ve unlocked Rebuild Resilience - Mindset, Movement, and Nutrition are now available!');
+    showCelebration('Phase 2 Unlocked!', 'You\'ve unlocked Rebuild Routines - Mindset, Movement, and Nutrition are now available!');
     updatePhaseLocks();
   }
 
   if (xp >= 250 && !phase3Unlocked) {
     localStorage.setItem('phase3Unlocked', 'true');
-    showCelebration('Phase 3 Unlocked!', 'You\'ve unlocked Reclaim Purpose - Productivity, Boundaries, and Purpose are now available!');
+    showCelebration('Phase 3 Unlocked!', 'You\'ve unlocked Rise with Resilience - Productivity, Boundaries, and Purpose are now available!');
     updatePhaseLocks();
   }
 }
