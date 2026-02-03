@@ -246,6 +246,10 @@ function navigateToStep(step) {
   window.scrollTo(0, 0);
 }
 
+function handleLockedStep(step) {
+  alert('This step will unlock as you progress!');
+}
+
 // Mobile menu toggle
 document.addEventListener('DOMContentLoaded', () => {
   const mobileToggle = document.getElementById('mobileMenuToggle');
@@ -269,11 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const step = link.getAttribute('data-step');
-      // Check if locked
-      if (link.getAttribute('data-locked') === 'true') {
-        handleLockedStep(step);
-        return;
-      }
       navigateToStep(step);
     });
   });
@@ -382,10 +381,6 @@ function updateDashboard() {
 
   // Update today's focus
   updateTodaysFocus();
-
-  // Update gamification displays
-  updateStreakDisplay();
-  updateXPDisplay();
 }
 
 function updateStepStreak(step, streak) {
@@ -781,16 +776,7 @@ function updateTodaySleepTracker() {
 
   for (let i = 0; i < 5; i++) {
     const checkbox = document.getElementById(`today-sleep-check${i}`);
-    const isChecked = checkbox ? checkbox.checked : false;
-    checks.push(isChecked);
-
-    // XP tracking per habit
-    const xpKey = `sleep-${todayKey}-${i}`;
-    if (isChecked) {
-      earnHabitXP(xpKey);
-    } else {
-      deductHabitXP(xpKey);
-    }
+    checks.push(checkbox ? checkbox.checked : false);
   }
 
   const hours = document.getElementById('today-sleep-hours')?.value || '';
@@ -809,12 +795,6 @@ function updateTodaySleepTracker() {
   calculateSleepStats();
   renderSleepCalendar();
   renderSleepHabitDashboard();
-
-  // Check for 100% day confetti
-  const completedCount = checks.filter(c => c).length;
-  if (completedCount === 5) {
-    checkStepConfetti('sleep', 100);
-  }
 }
 
 function changeSleepMonth(delta) {
@@ -1146,16 +1126,7 @@ function updateTodayStressTracker() {
   const tasks = [];
   for (let i = 0; i < currentPhase.tasks.length; i++) {
     const checkbox = document.getElementById(`today-stress-check${i}`);
-    const isChecked = checkbox ? checkbox.checked : false;
-    tasks.push(isChecked);
-
-    // XP per stress task
-    const xpKey = `stress-${todayKey}-${i}`;
-    if (isChecked) {
-      earnHabitXP(xpKey);
-    } else {
-      deductHabitXP(xpKey);
-    }
+    tasks.push(checkbox ? checkbox.checked : false);
   }
 
   const notes = document.getElementById('today-stress-notes')?.value || '';
@@ -1171,11 +1142,6 @@ function updateTodayStressTracker() {
 
   calculateStressStats();
   renderStressJourney();
-
-  // Confetti for all tasks complete
-  if (completed) {
-    checkStepConfetti('stress', 100);
-  }
 }
 
 function renderStressJourney() {
@@ -1419,16 +1385,7 @@ function updateTodayEnergyTracker() {
 
   for (let i = 0; i < 3; i++) {
     const checkbox = document.getElementById(`today-energy-check${i}`);
-    const isChecked = checkbox ? checkbox.checked : false;
-    checks.push(isChecked);
-
-    // XP per energy habit
-    const xpKey = `energy-${todayKey}-${i}`;
-    if (isChecked) {
-      earnHabitXP(xpKey);
-    } else {
-      deductHabitXP(xpKey);
-    }
+    checks.push(checkbox ? checkbox.checked : false);
   }
 
   const energyLevel = document.getElementById('today-energy-level')?.value || '';
@@ -1445,12 +1402,6 @@ function updateTodayEnergyTracker() {
   calculateEnergyStats();
   renderEnergyCalendar();
   renderEnergyHabitDashboard();
-
-  // Confetti on 3/3
-  const completedCount = checks.filter(c => c).length;
-  if (completedCount === 3) {
-    checkStepConfetti('energy', 100);
-  }
 }
 
 function changeEnergyMonth(delta) {
@@ -1769,14 +1720,6 @@ function updateTodayMindset() {
     if (radio.checked) type = radio.value;
   });
 
-  // Bonus XP for daily mindset reflection
-  const reflectionKey = `mindset-reflection-${todayKey}`;
-  if (situation.trim().length > 5 && story.trim().length > 5) {
-    earnBonusXP(reflectionKey, XP_PER_REFLECTION);
-  } else {
-    deductBonusXP(reflectionKey);
-  }
-
   saveMindsetDataForDate(todayKey, { situation, story, type });
 
   // Award XP if journal entry logged
@@ -2003,14 +1946,6 @@ function updateTodayMovement() {
   const before = document.getElementById('today-move-before')?.value || '';
   const after = document.getElementById('today-move-after')?.value || '';
   const notes = document.getElementById('today-move-notes')?.value || '';
-
-  // Bonus XP for logging a workout
-  const workoutKey = `movement-workout-${todayKey}`;
-  if (type.trim().length > 0 && duration) {
-    earnBonusXP(workoutKey, XP_PER_WORKOUT);
-  } else {
-    deductBonusXP(workoutKey);
-  }
 
   saveMovementDataForDate(todayKey, { type, duration, before, after, notes });
 
@@ -2295,16 +2230,7 @@ function updateTodayNutrition() {
 
   for (let i = 0; i < nutritionHabits.length; i++) {
     const checkbox = document.getElementById(`today-nutr-check${i}`);
-    const isChecked = checkbox ? checkbox.checked : false;
-    checks.push(isChecked);
-
-    // XP per nutrition habit
-    const xpKey = `nutrition-${todayKey}-${i}`;
-    if (isChecked) {
-      earnHabitXP(xpKey);
-    } else {
-      deductHabitXP(xpKey);
-    }
+    checks.push(checkbox ? checkbox.checked : false);
   }
 
   const notes = document.getElementById('today-nutr-notes')?.value || '';
@@ -2320,12 +2246,6 @@ function updateTodayNutrition() {
   calculateNutritionStats();
   renderNutritionCalendar();
   renderNutritionHabitDashboard();
-
-  // Confetti on all habits complete
-  const completedCount = checks.filter(c => c).length;
-  if (completedCount === nutritionHabits.length && nutritionHabits.length > 0) {
-    checkStepConfetti('nutrition', 100);
-  }
 }
 
 function changeNutritionMonth(delta) {
