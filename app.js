@@ -2548,6 +2548,40 @@ function updateXPDisplay() {
   const xpDisplay = document.getElementById('user-xp-display');
   if (xpDisplay) xpDisplay.textContent = xp;
 
+  // Update dashboard level bar
+  const levels = [
+    { level: 1, xpNeeded: 0, next: 500 },
+    { level: 2, xpNeeded: 500, next: 1200 },
+    { level: 3, xpNeeded: 1200, next: 2500 },
+    { level: 4, xpNeeded: 2500, next: 5000 },
+    { level: 5, xpNeeded: 5000, next: null }
+  ];
+
+  let current = levels[0];
+  for (let i = levels.length - 1; i >= 0; i--) {
+    if (xp >= levels[i].xpNeeded) {
+      current = levels[i];
+      break;
+    }
+  }
+
+  const levelBadge = document.getElementById('xp-level-badge');
+  const totalDisplay = document.getElementById('xp-total-display');
+  const nextLevel = document.getElementById('xp-next-level');
+  const barFill = document.getElementById('xp-bar-fill');
+
+  if (levelBadge) levelBadge.textContent = `Level ${current.level}`;
+  if (totalDisplay) totalDisplay.textContent = `${xp} XP`;
+
+  if (current.next) {
+    const progress = ((xp - current.xpNeeded) / (current.next - current.xpNeeded)) * 100;
+    if (barFill) barFill.style.width = Math.min(progress, 100) + '%';
+    if (nextLevel) nextLevel.textContent = `${current.next - xp} XP to Level ${current.level + 1}`;
+  } else {
+    if (barFill) barFill.style.width = '100%';
+    if (nextLevel) nextLevel.textContent = 'Max Level!';
+  }
+
   // Update phase 2 unlock bar
   const phase2Unlocked = localStorage.getItem('phase2Unlocked') === 'true';
   const phase2Bar = document.getElementById('phase2-unlock-progress');
