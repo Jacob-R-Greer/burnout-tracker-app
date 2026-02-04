@@ -371,7 +371,7 @@
             <div class="xp-bar">
               <div class="xp-fill" id="phase3-unlock-progress" style="width: 0%"></div>
             </div>
-            <span class="xp-label" id="phase3-xp-label">0 / 250 XP to unlock</span>
+            <span class="xp-label" id="phase3-xp-label">0 / 5000 XP to unlock</span>
           </div>
         </div>
 
@@ -1013,6 +1013,223 @@
         </div>
         
         <div id="nutrition-habit-dashboard">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PHASE 3: RISE WITH RESILIENCE
+         ================================================================ -->
+
+    <!-- Step 7: Productivity Power Plan -->
+    <section id="productivity-section" class="step-section">
+      <div class="section-intro">
+        <h2>Productivity Power Plan</h2>
+        <p>Use the four quadrants to organise your daily tasks, helping you see what should be prioritised in your life. Complete this each morning or the night before.</p>
+      </div>
+
+      <!-- Productivity Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon"><i data-lucide="flame"></i></div>
+          </div>
+          <div class="stat-value" id="productivity-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Tasks Prioritized</span>
+            <div class="stat-icon"><i data-lucide="list-checks"></i></div>
+          </div>
+          <div class="stat-value" id="productivity-tasks-total">0</div>
+          <div class="stat-subtext">total tasks sorted</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Deep Work Blocks</span>
+            <div class="stat-icon"><i data-lucide="target"></i></div>
+          </div>
+          <div class="stat-value" id="productivity-deep-work">0</div>
+          <div class="stat-subtext">completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Days Tracked</span>
+            <div class="stat-icon"><i data-lucide="calendar-check"></i></div>
+          </div>
+          <div class="stat-value" id="productivity-days">0</div>
+          <div class="stat-subtext">total days</div>
+        </div>
+      </div>
+
+      <!-- Priority Matrix -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Priority Matrix</h3>
+          <span class="week-progress" id="today-productivity-date">--</span>
+        </div>
+        <div id="productivity-matrix">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Time Blocking -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Time Blocking</h3>
+        </div>
+        <div id="productivity-timeblocks">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Distraction Free Environment -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Distraction Free Environment</h3>
+        </div>
+        <div id="productivity-environment">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Daily Reflection -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Daily Reflection</h3>
+        </div>
+        <div id="productivity-reflection">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 8: Boundary & Balance -->
+    <section id="boundary-section" class="step-section">
+      <div class="section-intro">
+        <h2>Boundary & Balance</h2>
+        <p>This weekly tracker helps you protect your peace, end each day intentionally, and align your time with what matters most. Choose up to three boundaries or rituals to focus on each week and check them off daily to build consistency and calm.</p>
+      </div>
+
+      <!-- Boundary Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Current Streak</span>
+            <div class="stat-icon"><i data-lucide="flame"></i></div>
+          </div>
+          <div class="stat-value" id="boundary-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Weeks Completed</span>
+            <div class="stat-icon"><i data-lucide="calendar-check"></i></div>
+          </div>
+          <div class="stat-value" id="boundary-weeks">0</div>
+          <div class="stat-subtext">full weeks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Boundaries Set</span>
+            <div class="stat-icon"><i data-lucide="shield"></i></div>
+          </div>
+          <div class="stat-value" id="boundary-total">0</div>
+          <div class="stat-subtext">boundaries defined</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Consistency</span>
+            <div class="stat-icon"><i data-lucide="bar-chart-3"></i></div>
+          </div>
+          <div class="stat-value" id="boundary-consistency">0%</div>
+          <div class="stat-subtext">check-off rate</div>
+        </div>
+      </div>
+
+      <!-- Weekly Intention Prompts -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Weekly Intention Prompts</h3>
+        </div>
+        <div id="boundary-intentions">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Weekly Boundary Tracker -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Weekly Boundary Tracker</h3>
+        </div>
+        <div id="boundary-tracker">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 9: Purpose & Resilience -->
+    <section id="purpose-section" class="step-section">
+      <div class="section-intro">
+        <h2>Purpose & Resilience</h2>
+        <p>Reconnect with what drives you, refine your purpose, and commit to meaningful growth. This three-part guided journal will help you rediscover your why, align your actions with your values, and turn purpose into daily practice.</p>
+      </div>
+
+      <!-- Purpose Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Journal Entries</span>
+            <div class="stat-icon"><i data-lucide="book-open"></i></div>
+          </div>
+          <div class="stat-value" id="purpose-entries">0</div>
+          <div class="stat-subtext">parts completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Growth Streak</span>
+            <div class="stat-icon"><i data-lucide="flame"></i></div>
+          </div>
+          <div class="stat-value" id="purpose-streak">0</div>
+          <div class="stat-subtext">days in a row</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Days of Practice</span>
+            <div class="stat-icon"><i data-lucide="calendar-check"></i></div>
+          </div>
+          <div class="stat-value" id="purpose-days">0</div>
+          <div class="stat-subtext">growth check-ins</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Priorities Set</span>
+            <div class="stat-icon"><i data-lucide="compass"></i></div>
+          </div>
+          <div class="stat-value" id="purpose-priorities">0</div>
+          <div class="stat-subtext">of 3 defined</div>
+        </div>
+      </div>
+
+      <!-- Guided Reflection Journal -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">Guided Reflection Journal</h3>
+        </div>
+        <div id="purpose-journal">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- 30-Day Growth Tracker -->
+      <div class="week-card">
+        <div class="week-header">
+          <h3 class="week-title">30-Day Growth Tracker</h3>
+        </div>
+        <div id="purpose-growth-tracker">
           <!-- Injected by JS -->
         </div>
       </div>

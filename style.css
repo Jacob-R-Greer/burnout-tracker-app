@@ -1379,3 +1379,464 @@ h1,
   font-size: 0.9em;
   color: var(--text-secondary);
 }
+
+/* ============================================================================
+   PHASE 3 STYLES
+   ============================================================================ */
+
+/* Priority Matrix */
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border-gray);
+  border: 2px solid var(--text-primary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.matrix-quadrant {
+  background: var(--card-white);
+  padding: 16px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.matrix-quadrant-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.matrix-tasks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.matrix-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-cream);
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.matrix-task span {
+  flex: 1;
+  word-break: break-word;
+}
+
+.matrix-task-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 2px;
+  line-height: 1;
+  font-size: 1.1em;
+}
+
+.matrix-task-remove:hover {
+  color: #e74c3c;
+}
+
+.matrix-add-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.matrix-add-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border-gray);
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-family: inherit;
+}
+
+.matrix-add-row button {
+  padding: 6px 12px;
+  background: var(--brand-sage);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.matrix-add-row button:hover {
+  background: var(--brand-sage-light);
+}
+
+@media (max-width: 600px) {
+  .matrix-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Time Blocking Table */
+.time-block-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.time-block-table th {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 12px;
+  background: var(--brand-sage);
+  color: white;
+  text-align: left;
+}
+
+.time-block-table th:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.time-block-table th:last-child {
+  border-radius: 0 8px 0 0;
+  text-align: center;
+}
+
+.time-block-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-gray);
+  font-size: 0.9em;
+}
+
+.time-block-table td:first-child {
+  font-weight: 600;
+}
+
+.time-block-table td:last-child {
+  text-align: center;
+}
+
+.time-block-table input[type="time"] {
+  padding: 6px 8px;
+  border: 1px solid var(--border-gray);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9em;
+  width: 100%;
+  max-width: 140px;
+}
+
+.time-block-table input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--brand-sage);
+}
+
+/* Boundary & Balance */
+.boundary-week-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.boundary-week-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--border-gray);
+  background: var(--card-white);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.boundary-week-btn.active {
+  background: var(--brand-sage);
+  color: white;
+  border-color: var(--brand-sage);
+}
+
+.boundary-week-btn:hover:not(.active) {
+  border-color: var(--brand-sage);
+}
+
+.boundary-grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 40px);
+  gap: 8px;
+  align-items: center;
+}
+
+.boundary-grid .day-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.8em;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.boundary-grid input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid var(--border-gray);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.85em;
+  width: 100%;
+}
+
+.boundary-grid input[type="checkbox"] {
+  width: 28px;
+  height: 28px;
+  accent-color: var(--brand-sage);
+  cursor: pointer;
+  margin: 0 auto;
+  display: block;
+}
+
+.boundary-tips {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--bg-cream);
+  border-radius: 8px;
+}
+
+.boundary-tips p {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.boundary-tips li {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin-left: 16px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 600px) {
+  .boundary-grid {
+    grid-template-columns: 1fr repeat(7, 30px);
+    gap: 4px;
+  }
+  .boundary-grid input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Journal Tabs */
+.journal-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-gray);
+  padding-bottom: 0;
+}
+
+.journal-tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+
+.journal-tab.active {
+  color: var(--brand-sage);
+  border-bottom-color: var(--brand-sage);
+}
+
+.journal-tab:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+.journal-part {
+  display: none;
+}
+
+.journal-part.active {
+  display: block;
+}
+
+.journal-intro {
+  font-size: 0.95em;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.journal-prompt {
+  margin-bottom: 24px;
+}
+
+.journal-prompt-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85em;
+  font-weight: 900;
+  color: var(--brand-sage);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.journal-prompt-text {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.journal-prompt textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9em;
+  line-height: 1.6;
+  min-height: 100px;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.journal-prompt textarea:focus {
+  outline: none;
+  border-color: var(--brand-sage);
+}
+
+.journal-priorities {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-gray);
+}
+
+.journal-priorities h4 {
+  font-size: 1.1em;
+  margin-bottom: 12px;
+}
+
+.journal-priorities .input-field {
+  margin-bottom: 10px;
+}
+
+.journal-priorities input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-gray);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
+.journal-priorities input:focus {
+  outline: none;
+  border-color: var(--brand-sage);
+}
+
+/* 30-Day Growth Tracker */
+.growth-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.growth-day {
+  background: var(--bg-cream);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.growth-day:hover {
+  border-color: var(--brand-sage-light);
+}
+
+.growth-day.completed {
+  background: var(--brand-sage);
+  color: white;
+}
+
+.growth-day.completed .growth-day-num {
+  color: white;
+}
+
+.growth-day.today {
+  border-color: var(--brand-sage);
+}
+
+.growth-day-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2em;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.growth-day-check {
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+.growth-today-input {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.growth-today-input input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  accent-color: var(--brand-sage);
+  flex-shrink: 0;
+}
+
+.growth-today-input input[type="text"] {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border-gray);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
+.growth-today-input input[type="text"]:focus {
+  outline: none;
+  border-color: var(--brand-sage);
+}
+
+@media (max-width: 600px) {
+  .growth-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

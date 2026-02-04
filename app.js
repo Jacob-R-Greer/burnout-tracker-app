@@ -247,7 +247,9 @@ function navigateToStep(step) {
 }
 
 function handleLockedStep(step) {
-  alert('This step will unlock as you progress!');
+  const xp = getUserXP();
+  const remaining = Math.max(5000 - xp, 0);
+  alert(`Reach Level 5 (${remaining} XP to go) to unlock this step!`);
 }
 
 // Mobile menu toggle
@@ -370,6 +372,37 @@ function updateDashboard() {
   updateNavStreak('mindset', mindsetStreak);
   updateNavStreak('movement', movementStreak);
   updateNavStreak('nutrition', nutritionStreak);
+
+  // Phase 3 streaks
+  const productivityStreak = calculateProductivityStreak();
+  const boundaryStreak = calculateBoundaryStreak();
+  const purposeStreak = calculatePurposeStreak();
+
+  const p3Productivity = document.getElementById('phase3-productivity-streak');
+  const p3Boundary = document.getElementById('phase3-boundary-streak');
+  const p3Purpose = document.getElementById('phase3-purpose-streak');
+  if (p3Productivity) p3Productivity.textContent = productivityStreak + 'd';
+  if (p3Boundary) p3Boundary.textContent = boundaryStreak + 'd';
+  if (p3Purpose) p3Purpose.textContent = purposeStreak + 'd';
+
+  updateStepStreak('productivity', productivityStreak);
+  updateStepStreak('boundary', boundaryStreak);
+  updateStepStreak('purpose', purposeStreak);
+
+  updateNavStreak('productivity', productivityStreak);
+  updateNavStreak('boundary', boundaryStreak);
+  updateNavStreak('purpose', purposeStreak);
+
+  // Include Phase 3 data in total days active
+  [getAllProductivityData(), getAllGrowthData()].forEach(data => {
+    Object.keys(data).forEach(date => allDates.add(date));
+  });
+  if (daysActiveEl) daysActiveEl.textContent = allDates.size;
+
+  // Update longest streak to include Phase 3
+  const allStreaks = [...streaks, productivityStreak, boundaryStreak, purposeStreak];
+  const overallLongest = Math.max(...allStreaks, 0);
+  if (streakEl) streakEl.textContent = overallLongest;
 
   // Update XP display
   updateXPDisplay();
@@ -2513,7 +2546,7 @@ function checkPhaseUnlocks(xp) {
     updatePhaseLocks();
   }
 
-  if (xp >= 250 && !phase3Unlocked) {
+  if (xp >= 5000 && !phase3Unlocked) {
     localStorage.setItem('phase3Unlocked', 'true');
     showCelebration('Phase 3 Unlocked!', 'You\'ve unlocked Rise with Resilience - Productivity, Boundaries, and Purpose are now available!');
     updatePhaseLocks();
@@ -2596,6 +2629,21 @@ function updateXPDisplay() {
     if (phase2Bar) phase2Bar.style.width = progress + '%';
     if (phase2Label) phase2Label.textContent = `${xp} / 100 XP to unlock`;
   }
+
+  // Update phase 3 unlock bar
+  const phase3Unlocked = localStorage.getItem('phase3Unlocked') === 'true';
+  const phase3Bar = document.getElementById('phase3-unlock-progress');
+  const phase3Label = document.getElementById('phase3-xp-label');
+  const phase3Section = document.getElementById('phase3-unlock-section');
+
+  if (phase3Unlocked) {
+    if (phase3Section) phase3Section.style.display = 'none';
+  } else {
+    if (phase3Section) phase3Section.style.display = 'flex';
+    const progress = Math.min((xp / 5000) * 100, 100);
+    if (phase3Bar) phase3Bar.style.width = progress + '%';
+    if (phase3Label) phase3Label.textContent = `${xp} / 5000 XP to unlock`;
+  }
 }
 
 function updatePhaseLocks() {
@@ -2624,13 +2672,27 @@ function updatePhaseLocks() {
   }
 
   // Phase 3 lock
-  document.querySelectorAll('.phase3-nav').forEach(el => {
-    if (phase3Unlocked) {
-      el.classList.remove('phase-locked');
-    } else {
-      el.classList.add('phase-locked');
-    }
-  });
+  const phase3Lock = document.getElementById('phase3-lock');
+  const phase3Card = document.getElementById('phase3-card');
+  if (phase3Unlocked) {
+    if (phase3Lock) phase3Lock.style.display = 'none';
+    if (phase3Card) phase3Card.classList.remove('locked');
+    document.querySelectorAll('.phase3-nav').forEach(el => el.classList.remove('phase-locked'));
+    document.querySelectorAll('.step-card-locked').forEach(el => {
+      el.style.opacity = '1';
+      el.style.filter = 'none';
+      el.style.pointerEvents = 'auto';
+      el.onclick = null;
+    });
+  } else {
+    if (phase3Lock) phase3Lock.style.display = 'inline';
+    if (phase3Card) phase3Card.classList.add('locked');
+    document.querySelectorAll('.phase3-nav').forEach(el => el.classList.add('phase-locked'));
+    document.querySelectorAll('.step-card-locked').forEach(el => {
+      el.style.opacity = '0.6';
+      el.style.filter = 'blur(1px)';
+    });
+  }
 }
 
 // XP award helpers - only award once per day per tracker
@@ -2653,6 +2715,828 @@ function awardStreakXP(streakDays, trackerKey) {
     }
   }
 
+}
+
+// ============================================================================
+// STEP 7: PRODUCTIVITY POWER PLAN
+// ============================================================================
+
+const timeBlockLabels = [
+  'Deep Work/Focus #1',
+  'Deep Work/Focus #2',
+  'Shallow Work/Admin',
+  'Breaks',
+  'Recovery (walk, stretch, etc)'
+];
+
+const environmentChecklist = [
+  'Phone out of room',
+  'Browser tabs closed',
+  'Notifications off',
+  'Workspace clear and ready',
+  'Ritual check (water, posture, focus ready)'
+];
+
+const reflectionQuestions = [
+  { key: 'mits', q: 'Did I complete my MITs (most important tasks)?' },
+  { key: 'deepWork', q: 'Did I protect at least one deep work block?' },
+  { key: 'distractions', q: 'Did I avoid distractions?' },
+  { key: 'improve', q: 'What will I improve tomorrow?' }
+];
+
+function loadProductivityDataForDate(dateKey) {
+  const saved = localStorage.getItem('productivityDataByDate');
+  if (!saved) return {};
+  try { return JSON.parse(saved)[dateKey] || {}; } catch (e) { return {}; }
+}
+
+function saveProductivityDataForDate(dateKey, data) {
+  let allData = {};
+  const saved = localStorage.getItem('productivityDataByDate');
+  if (saved) { try { allData = JSON.parse(saved); } catch (e) { allData = {}; } }
+  allData[dateKey] = data;
+  autoSave('productivityDataByDate', JSON.stringify(allData));
+}
+
+function getAllProductivityData() {
+  const saved = localStorage.getItem('productivityDataByDate');
+  if (!saved) return {};
+  try { return JSON.parse(saved); } catch (e) { return {}; }
+}
+
+function initProductivityTracker() {
+  renderTodayProductivityTracker();
+  calculateProductivityStats();
+  setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 100);
+}
+
+function renderTodayProductivityTracker() {
+  const today = new Date();
+  const dateStr = `${daysOfWeek[today.getDay() === 0 ? 6 : today.getDay() - 1]}, ${monthNames[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
+  const todayDateEl = document.getElementById('today-productivity-date');
+  if (todayDateEl) todayDateEl.textContent = dateStr;
+
+  const todayKey = getTodayKey();
+  const data = loadProductivityDataForDate(todayKey);
+
+  renderProductivityMatrix(data);
+  renderProductivityTimeBlocks(data);
+  renderProductivityEnvironment(data);
+  renderProductivityReflection(data);
+}
+
+function renderProductivityMatrix(data) {
+  const container = document.getElementById('productivity-matrix');
+  if (!container) return;
+
+  const matrix = data.matrix || {
+    'urgent-important': [],
+    'not-urgent-important': [],
+    'urgent-not-important': [],
+    'not-urgent-not-important': []
+  };
+
+  const quadrants = [
+    { key: 'urgent-important', title: 'Important & Urgent' },
+    { key: 'not-urgent-important', title: 'Important, Not Urgent' },
+    { key: 'urgent-not-important', title: 'Not Important, Urgent' },
+    { key: 'not-urgent-not-important', title: 'Not Important & Not Urgent' }
+  ];
+
+  container.innerHTML = `
+    <div class="matrix-grid">
+      ${quadrants.map(q => `
+        <div class="matrix-quadrant">
+          <div class="matrix-quadrant-title">${q.title}</div>
+          <div class="matrix-tasks" id="matrix-tasks-${q.key}">
+            ${(matrix[q.key] || []).map((task, i) => `
+              <div class="matrix-task">
+                <span>${task}</span>
+                <button class="matrix-task-remove" onclick="removeMatrixTask('${q.key}', ${i})">&times;</button>
+              </div>
+            `).join('')}
+          </div>
+          <div class="matrix-add-row">
+            <input type="text" id="matrix-input-${q.key}" placeholder="Add task..." onkeydown="if(event.key==='Enter')addMatrixTask('${q.key}')">
+            <button onclick="addMatrixTask('${q.key}')">Add</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function addMatrixTask(quadrant) {
+  const input = document.getElementById(`matrix-input-${quadrant}`);
+  if (!input || !input.value.trim()) return;
+
+  const todayKey = getTodayKey();
+  const data = loadProductivityDataForDate(todayKey);
+  if (!data.matrix) data.matrix = { 'urgent-important': [], 'not-urgent-important': [], 'urgent-not-important': [], 'not-urgent-not-important': [] };
+  data.matrix[quadrant].push(input.value.trim());
+  saveProductivityDataForDate(todayKey, data);
+  renderProductivityMatrix(data);
+  updateTodayProductivityTracker();
+}
+
+function removeMatrixTask(quadrant, index) {
+  const todayKey = getTodayKey();
+  const data = loadProductivityDataForDate(todayKey);
+  if (data.matrix && data.matrix[quadrant]) {
+    data.matrix[quadrant].splice(index, 1);
+    saveProductivityDataForDate(todayKey, data);
+    renderProductivityMatrix(data);
+    updateTodayProductivityTracker();
+  }
+}
+
+function renderProductivityTimeBlocks(data) {
+  const container = document.getElementById('productivity-timeblocks');
+  if (!container) return;
+
+  const timeBlocks = data.timeBlocks || timeBlockLabels.map(() => ({ planned: '', completed: false }));
+
+  container.innerHTML = `
+    <table class="time-block-table">
+      <thead>
+        <tr>
+          <th>Block</th>
+          <th>Planned Time</th>
+          <th>Completed</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${timeBlockLabels.map((label, i) => `
+          <tr>
+            <td>${label}</td>
+            <td><input type="time" id="timeblock-time-${i}" value="${timeBlocks[i]?.planned || ''}" onchange="updateTodayProductivityTracker()"></td>
+            <td><input type="checkbox" id="timeblock-done-${i}" ${timeBlocks[i]?.completed ? 'checked' : ''} onchange="updateTodayProductivityTracker()"></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderProductivityEnvironment(data) {
+  const container = document.getElementById('productivity-environment');
+  if (!container) return;
+
+  const env = data.environment || environmentChecklist.map(() => false);
+
+  container.innerHTML = `
+    <div class="checklist">
+      ${environmentChecklist.map((item, i) => `
+        <div class="checklist-item">
+          <input type="checkbox" id="env-check-${i}" ${env[i] ? 'checked' : ''} onchange="updateTodayProductivityTracker()">
+          <label for="env-check-${i}">${item}</label>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderProductivityReflection(data) {
+  const container = document.getElementById('productivity-reflection');
+  if (!container) return;
+
+  const reflection = data.reflection || {};
+
+  container.innerHTML = `
+    <div class="input-grid">
+      ${reflectionQuestions.map(rq => `
+        <div class="input-field full-width">
+          <label for="reflect-${rq.key}" style="font-weight: 600;">${rq.q}</label>
+          <textarea id="reflect-${rq.key}" placeholder="Reflect on your day..." oninput="updateTodayProductivityTracker()">${reflection[rq.key] || ''}</textarea>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function updateTodayProductivityTracker() {
+  const todayKey = getTodayKey();
+  const data = loadProductivityDataForDate(todayKey);
+
+  const timeBlocks = timeBlockLabels.map((_, i) => ({
+    planned: document.getElementById(`timeblock-time-${i}`)?.value || '',
+    completed: document.getElementById(`timeblock-done-${i}`)?.checked || false
+  }));
+  data.timeBlocks = timeBlocks;
+
+  data.environment = environmentChecklist.map((_, i) =>
+    document.getElementById(`env-check-${i}`)?.checked || false
+  );
+
+  data.reflection = {};
+  reflectionQuestions.forEach(rq => {
+    data.reflection[rq.key] = document.getElementById(`reflect-${rq.key}`)?.value || '';
+  });
+
+  saveProductivityDataForDate(todayKey, data);
+
+  const totalMatrixTasks = data.matrix ? Object.values(data.matrix).reduce((sum, arr) => sum + arr.length, 0) : 0;
+  const envChecked = (data.environment || []).filter(c => c).length;
+  if (totalMatrixTasks > 0 && envChecked >= 3) {
+    awardDailyXP('productivity');
+    awardStreakXP(calculateProductivityStreak(), 'productivity');
+  }
+
+  const hasReflection = reflectionQuestions.every(rq => (data.reflection[rq.key] || '').trim().length > 0);
+  if (hasReflection) {
+    awardPhase3BonusXP('productivity-reflection-' + todayKey, 100);
+  }
+
+  calculateProductivityStats();
+}
+
+function calculateProductivityStreak() {
+  const allData = getAllProductivityData();
+  const dates = Object.keys(allData).sort();
+  let streak = 0;
+  for (let i = dates.length - 1; i >= 0; i--) {
+    const d = allData[dates[i]];
+    const tasks = d.matrix ? Object.values(d.matrix).reduce((s, a) => s + a.length, 0) : 0;
+    if (tasks > 0) { streak++; } else { break; }
+  }
+  return streak;
+}
+
+function calculateProductivityStats() {
+  const allData = getAllProductivityData();
+  const dates = Object.keys(allData);
+
+  let totalTasks = 0;
+  let deepWorkBlocks = 0;
+  dates.forEach(date => {
+    const d = allData[date];
+    if (d.matrix) totalTasks += Object.values(d.matrix).reduce((s, a) => s + a.length, 0);
+    if (d.timeBlocks) deepWorkBlocks += d.timeBlocks.filter((tb, i) => i < 2 && tb.completed).length;
+  });
+
+  const streakEl = document.getElementById('productivity-streak');
+  const tasksEl = document.getElementById('productivity-tasks-total');
+  const deepEl = document.getElementById('productivity-deep-work');
+  const daysEl = document.getElementById('productivity-days');
+
+  if (streakEl) streakEl.textContent = calculateProductivityStreak();
+  if (tasksEl) tasksEl.textContent = totalTasks;
+  if (deepEl) deepEl.textContent = deepWorkBlocks;
+  if (daysEl) daysEl.textContent = dates.length;
+}
+
+// ============================================================================
+// STEP 8: BOUNDARY & BALANCE
+// ============================================================================
+
+const intentionPrompts = [
+  { key: 'shutdown', q: 'When will I officially shut down each day to signal the end of work?', example: 'Example: \u201c8:30 PM \u2014 turn off laptop, plan tomorrow, stretch for 5 min.\u201d' },
+  { key: 'techBoundary', q: 'What technology or time boundary will help me stay focused or present this week?', example: 'Example: \u201cNo phone during meals or deep work 9\u201311 AM.\u201d' },
+  { key: 'ritual', q: 'What calming ritual will help me unwind and recharge daily?', example: 'Example: \u201cRead before bed or light a candle and journal.\u201d' }
+];
+
+function loadBoundaryData() {
+  const saved = localStorage.getItem('boundaryData');
+  if (!saved) return { intentions: {}, weeks: {} };
+  try { return JSON.parse(saved); } catch (e) { return { intentions: {}, weeks: {} }; }
+}
+
+function saveBoundaryData(data) {
+  autoSave('boundaryData', JSON.stringify(data));
+}
+
+function initBoundaryTracker() {
+  renderBoundaryIntentions();
+  renderBoundaryWeekTracker(1);
+  calculateBoundaryStats();
+  setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 100);
+}
+
+function renderBoundaryIntentions() {
+  const container = document.getElementById('boundary-intentions');
+  if (!container) return;
+
+  const data = loadBoundaryData();
+  const intentions = data.intentions || {};
+
+  container.innerHTML = `
+    <div class="input-grid">
+      ${intentionPrompts.map(p => `
+        <div class="input-field full-width">
+          <label for="intention-${p.key}" style="font-weight: 600;">${p.q}</label>
+          <p style="font-size: 0.85em; color: var(--text-light); margin-bottom: 8px;">${p.example}</p>
+          <textarea id="intention-${p.key}" placeholder="Write your intention..." oninput="updateBoundaryIntentions()">${intentions[p.key] || ''}</textarea>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function updateBoundaryIntentions() {
+  const data = loadBoundaryData();
+  data.intentions = {};
+  intentionPrompts.forEach(p => {
+    data.intentions[p.key] = document.getElementById(`intention-${p.key}`)?.value || '';
+  });
+  saveBoundaryData(data);
+}
+
+let currentBoundaryWeek = 1;
+
+function renderBoundaryWeekTracker(weekNum) {
+  const container = document.getElementById('boundary-tracker');
+  if (!container) return;
+  currentBoundaryWeek = weekNum;
+
+  const data = loadBoundaryData();
+  const weekData = (data.weeks && data.weeks[weekNum]) || {
+    boundaries: ['', '', ''],
+    checks: [
+      [false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false]
+    ]
+  };
+
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  container.innerHTML = `
+    <div class="boundary-week-nav">
+      ${[1,2,3,4,5,6].map(w => `
+        <button class="boundary-week-btn ${w === weekNum ? 'active' : ''}" onclick="renderBoundaryWeekTracker(${w})">Week ${w}</button>
+      `).join('')}
+    </div>
+
+    <div class="boundary-grid">
+      <div></div>
+      ${days.map(d => `<div class="day-label">${d}</div>`).join('')}
+
+      ${[0,1,2].map(row => `
+        <input type="text" id="boundary-name-${row}" value="${weekData.boundaries[row] || ''}" placeholder="Boundary ${row + 1}..." oninput="updateBoundaryTracker()">
+        ${[0,1,2,3,4,5,6].map(col => `
+          <input type="checkbox" id="boundary-check-${row}-${col}" ${weekData.checks[row]?.[col] ? 'checked' : ''} onchange="updateBoundaryTracker()">
+        `).join('')}
+      `).join('')}
+    </div>
+
+    <div class="boundary-tips">
+      <p>Tips:</p>
+      <ul>
+        <li>Notice which boundaries create calm and which cause stress \u2014 adjust weekly.</li>
+        <li>Review your wins. Keep the boundaries that helped you feel grounded and confident.</li>
+      </ul>
+    </div>
+  `;
+}
+
+function updateBoundaryTracker() {
+  const data = loadBoundaryData();
+  if (!data.weeks) data.weeks = {};
+
+  const weekData = {
+    boundaries: [0,1,2].map(row => document.getElementById(`boundary-name-${row}`)?.value || ''),
+    checks: [0,1,2].map(row =>
+      [0,1,2,3,4,5,6].map(col => document.getElementById(`boundary-check-${row}-${col}`)?.checked || false)
+    )
+  };
+
+  data.weeks[currentBoundaryWeek] = weekData;
+  saveBoundaryData(data);
+
+  const todayDayIndex = (new Date().getDay() + 6) % 7;
+  const anyCheckedToday = [0,1,2].some(row => weekData.checks[row]?.[todayDayIndex]);
+  if (anyCheckedToday) {
+    awardDailyXP('boundary');
+    awardStreakXP(calculateBoundaryStreak(), 'boundary');
+  }
+
+  const allCheckedForWeek = [0,1,2].every(row =>
+    weekData.boundaries[row].trim().length > 0 &&
+    weekData.checks[row].every(c => c)
+  );
+  if (allCheckedForWeek) {
+    awardPhase3BonusXP(`boundary-week-${currentBoundaryWeek}`, 100);
+  }
+
+  calculateBoundaryStats();
+}
+
+function calculateBoundaryStreak() {
+  const data = loadBoundaryData();
+  if (!data.weeks) return 0;
+
+  let streak = 0;
+  const today = new Date();
+  for (let d = 0; d < 42; d++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() - d);
+    const dayIndex = (checkDate.getDay() + 6) % 7;
+
+    let found = false;
+    for (let w = 1; w <= 6; w++) {
+      const wk = data.weeks[w];
+      if (wk && [0,1,2].some(row => wk.checks[row]?.[dayIndex])) {
+        found = true;
+        break;
+      }
+    }
+    if (found) { streak++; } else if (d > 0) { break; }
+  }
+  return streak;
+}
+
+function calculateBoundaryStats() {
+  const data = loadBoundaryData();
+  let weeksCompleted = 0;
+  let totalBoundaries = 0;
+  let totalChecks = 0;
+  let totalPossible = 0;
+
+  if (data.weeks) {
+    for (let w = 1; w <= 6; w++) {
+      const wk = data.weeks[w];
+      if (!wk) continue;
+      const activeBoundaries = wk.boundaries.filter(b => b.trim().length > 0).length;
+      totalBoundaries += activeBoundaries;
+
+      let weekComplete = activeBoundaries === 3;
+      for (let row = 0; row < 3; row++) {
+        if (wk.boundaries[row]?.trim().length > 0) {
+          totalPossible += 7;
+          const rowChecks = (wk.checks[row] || []).filter(c => c).length;
+          totalChecks += rowChecks;
+          if (rowChecks < 7) weekComplete = false;
+        }
+      }
+      if (weekComplete && activeBoundaries === 3) weeksCompleted++;
+    }
+  }
+
+  const consistency = totalPossible > 0 ? Math.round((totalChecks / totalPossible) * 100) : 0;
+
+  const streakEl = document.getElementById('boundary-streak');
+  const weeksEl = document.getElementById('boundary-weeks');
+  const totalEl = document.getElementById('boundary-total');
+  const consistEl = document.getElementById('boundary-consistency');
+
+  if (streakEl) streakEl.textContent = calculateBoundaryStreak();
+  if (weeksEl) weeksEl.textContent = weeksCompleted;
+  if (totalEl) totalEl.textContent = totalBoundaries;
+  if (consistEl) consistEl.textContent = consistency + '%';
+}
+
+// ============================================================================
+// STEP 9: PURPOSE & RESILIENCE
+// ============================================================================
+
+const purposeParts = [
+  {
+    key: 'part1',
+    title: 'Part 1: Reconnect',
+    intro: 'Before you can refine your purpose, you must first reconnect with the experiences, people, and passions that shaped who you are today. This section will help you rediscover your \u201cwhy\u201d \u2014 the spark that ignited your path in the first place.',
+    prompts: [
+      'Think back to a time when you felt fully alive and engaged in what you were doing. What were you doing? Who were you with? Why did it feel meaningful?',
+      'Who or what has had the biggest influence on your life\u2019s direction so far? How have those people or experiences shaped your beliefs and values?',
+      'What moments or accomplishments from your past are you most proud of \u2014 and why?',
+      'What challenges have taught you the most about yourself? How did you grow or adapt as a result?',
+      'If you could reconnect with your younger self \u2014 the version of you who dreamed boldly \u2014 what advice would they give you about what really matters?'
+    ]
+  },
+  {
+    key: 'part2',
+    title: 'Part 2: Refine Your Purpose',
+    intro: 'Purpose becomes clear when your values, strengths, and actions align. This section helps you define what truly matters and ensure that your current path supports the life you want to build.',
+    prompts: [
+      'What values feel non-negotiable in your life right now? How do they show up (or not) in your daily habits and decisions?',
+      'Which activities give you energy and fulfillment \u2014 and which ones drain you?',
+      'What strengths do others often recognize in you that you may take for granted?',
+      'What would your ideal day look like if your life were fully aligned with your purpose?',
+      'What goals, roles, or habits no longer serve who you\u2019re becoming?'
+    ],
+    hasPriorities: true
+  },
+  {
+    key: 'part3',
+    title: 'Part 3: Growth & Apprenticeship',
+    intro: 'This section invites you to move from reflection to growth. It\u2019s time to put purpose into motion through action, learning, and mentorship. The goal isn\u2019t perfection \u2014 but progress and mastery.',
+    prompts: [
+      'What skill, craft, or area of growth are you most excited to master right now?',
+      'Who could serve as a mentor, coach, or guide on this next leg of your journey?',
+      'What\u2019s one challenge or stretch goal that would help you grow faster?',
+      'How can you create accountability that allows you to measure your progress and stay consistent?',
+      'Imagine yourself one year from now. What will you be proud to say you\u2019ve learned or built?'
+    ],
+    hasApprenticeship: true
+  }
+];
+
+function loadPurposeData() {
+  const saved = localStorage.getItem('purposeData');
+  if (!saved) return {};
+  try { return JSON.parse(saved); } catch (e) { return {}; }
+}
+
+function savePurposeData(data) {
+  autoSave('purposeData', JSON.stringify(data));
+}
+
+function loadGrowthDataForDate(dateKey) {
+  const saved = localStorage.getItem('growthDataByDate');
+  if (!saved) return {};
+  try { return JSON.parse(saved)[dateKey] || {}; } catch (e) { return {}; }
+}
+
+function saveGrowthDataForDate(dateKey, data) {
+  let allData = {};
+  const saved = localStorage.getItem('growthDataByDate');
+  if (saved) { try { allData = JSON.parse(saved); } catch (e) { allData = {}; } }
+  allData[dateKey] = data;
+  autoSave('growthDataByDate', JSON.stringify(allData));
+}
+
+function getAllGrowthData() {
+  const saved = localStorage.getItem('growthDataByDate');
+  if (!saved) return {};
+  try { return JSON.parse(saved); } catch (e) { return {}; }
+}
+
+function initPurposeTracker() {
+  renderPurposeJournal();
+  renderGrowthTracker();
+  calculatePurposeStats();
+  setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 100);
+}
+
+let currentJournalPart = 'part1';
+
+function renderPurposeJournal() {
+  const container = document.getElementById('purpose-journal');
+  if (!container) return;
+
+  const data = loadPurposeData();
+
+  container.innerHTML = `
+    <div class="journal-tabs">
+      ${purposeParts.map(p => `
+        <button class="journal-tab ${p.key === currentJournalPart ? 'active' : ''}" onclick="switchJournalPart('${p.key}')">${p.title}</button>
+      `).join('')}
+    </div>
+
+    ${purposeParts.map(part => {
+      const partData = data[part.key] || {};
+      return `
+        <div class="journal-part ${part.key === currentJournalPart ? 'active' : ''}" id="journal-${part.key}">
+          <p class="journal-intro">${part.intro}</p>
+
+          ${part.prompts.map((prompt, i) => `
+            <div class="journal-prompt">
+              <div class="journal-prompt-number">Prompt ${i + 1}</div>
+              <div class="journal-prompt-text">${prompt}</div>
+              <textarea
+                id="purpose-${part.key}-q${i + 1}"
+                placeholder="Take your time\u2026 write from the heart."
+                oninput="updatePurposeJournal('${part.key}')"
+              >${partData['q' + (i + 1)] || ''}</textarea>
+            </div>
+          `).join('')}
+
+          ${part.hasPriorities ? `
+            <div class="journal-priorities">
+              <h4>List your top 3 priorities for the next 6 months that align with your purpose.</h4>
+              ${[1,2,3].map(n => `
+                <div class="input-field">
+                  <label for="purpose-priority-${n}">Priority ${n}</label>
+                  <input type="text" id="purpose-priority-${n}" value="${partData['priority' + n] || ''}" placeholder="Enter priority ${n}..." oninput="updatePurposeJournal('${part.key}')">
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          ${part.hasApprenticeship ? `
+            <div class="journal-priorities">
+              <h4>Commit to Apprenticeship</h4>
+              <div class="input-field">
+                <label for="purpose-growth-area" style="font-weight: 600;">Choose one growth area to focus on for the next 30 days.</label>
+                <input type="text" id="purpose-growth-area" value="${partData.growthArea || ''}" placeholder="e.g., Public speaking, coding, meditation..." oninput="updatePurposeJournal('${part.key}')">
+              </div>
+              <div class="input-field" style="margin-top: 12px;">
+                <label for="purpose-concrete-action" style="font-weight: 600;">Define one concrete action you'll take this week to begin.</label>
+                <input type="text" id="purpose-concrete-action" value="${partData.concreteAction || ''}" placeholder="e.g., Sign up for a class, practice 15 min daily..." oninput="updatePurposeJournal('${part.key}')">
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function switchJournalPart(partKey) {
+  currentJournalPart = partKey;
+  document.querySelectorAll('.journal-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.journal-part').forEach(part => part.classList.remove('active'));
+
+  const activeTab = document.querySelector(`.journal-tab[onclick="switchJournalPart('${partKey}')"]`);
+  const activePart = document.getElementById(`journal-${partKey}`);
+  if (activeTab) activeTab.classList.add('active');
+  if (activePart) activePart.classList.add('active');
+}
+
+function updatePurposeJournal(partKey) {
+  const data = loadPurposeData();
+  const part = purposeParts.find(p => p.key === partKey);
+  if (!part) return;
+
+  const partData = {};
+  part.prompts.forEach((_, i) => {
+    partData['q' + (i + 1)] = document.getElementById(`purpose-${partKey}-q${i + 1}`)?.value || '';
+  });
+
+  if (part.hasPriorities) {
+    [1,2,3].forEach(n => {
+      partData['priority' + n] = document.getElementById(`purpose-priority-${n}`)?.value || '';
+    });
+  }
+
+  if (part.hasApprenticeship) {
+    partData.growthArea = document.getElementById('purpose-growth-area')?.value || '';
+    partData.concreteAction = document.getElementById('purpose-concrete-action')?.value || '';
+  }
+
+  data[partKey] = partData;
+  savePurposeData(data);
+
+  const allAnswered = part.prompts.every((_, i) => (partData['q' + (i + 1)] || '').trim().length > 5);
+  if (allAnswered) {
+    awardPhase3BonusXP(`purpose-journal-${partKey}`, 100);
+  }
+
+  calculatePurposeStats();
+  checkStep9Completion();
+}
+
+function renderGrowthTracker() {
+  const container = document.getElementById('purpose-growth-tracker');
+  if (!container) return;
+
+  const allGrowth = getAllGrowthData();
+  const purposeData = loadPurposeData();
+  const growthArea = purposeData.part3?.growthArea || 'your growth area';
+  const todayKey = getTodayKey();
+  const todayData = allGrowth[todayKey] || {};
+
+  const allDates = Object.keys(allGrowth).sort();
+  const startDate = allDates.length > 0 ? new Date(allDates[0] + 'T00:00:00') : new Date();
+
+  let gridHTML = '<div class="growth-grid">';
+  for (let day = 1; day <= 30; day++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + day - 1);
+    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dayData = allGrowth[dateKey];
+    const isCompleted = dayData?.completed;
+    const isToday = dateKey === todayKey;
+
+    gridHTML += `
+      <div class="growth-day ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}">
+        <div class="growth-day-num">${day}</div>
+        <div class="growth-day-check">${isCompleted ? '\u2713' : ''}</div>
+      </div>
+    `;
+  }
+  gridHTML += '</div>';
+
+  container.innerHTML = `
+    <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 0.9em;">
+      Track your daily practice for: <strong>${growthArea}</strong>
+    </p>
+    ${gridHTML}
+    <div class="growth-today-input">
+      <input type="checkbox" id="growth-today-check" ${todayData.completed ? 'checked' : ''} onchange="updateGrowthTracker()">
+      <input type="text" id="growth-today-note" value="${todayData.note || ''}" placeholder="What did you practice today?" oninput="updateGrowthTracker()">
+    </div>
+  `;
+}
+
+function updateGrowthTracker() {
+  const todayKey = getTodayKey();
+  const completed = document.getElementById('growth-today-check')?.checked || false;
+  const note = document.getElementById('growth-today-note')?.value || '';
+
+  saveGrowthDataForDate(todayKey, { completed, note });
+
+  if (completed) {
+    awardDailyXP('purpose');
+    awardStreakXP(calculatePurposeStreak(), 'purpose');
+  }
+
+  renderGrowthTracker();
+  calculatePurposeStats();
+  checkStep9Completion();
+}
+
+function calculatePurposeStreak() {
+  const allData = getAllGrowthData();
+  const dates = Object.keys(allData).sort();
+  let streak = 0;
+  for (let i = dates.length - 1; i >= 0; i--) {
+    if (allData[dates[i]]?.completed) { streak++; } else { break; }
+  }
+  return streak;
+}
+
+function calculatePurposeStats() {
+  const purposeData = loadPurposeData();
+  const allGrowth = getAllGrowthData();
+
+  let journalEntries = 0;
+  purposeParts.forEach(part => {
+    const pd = purposeData[part.key];
+    if (pd) {
+      const answered = part.prompts.filter((_, i) => (pd['q' + (i + 1)] || '').trim().length > 5).length;
+      if (answered >= 3) journalEntries++;
+    }
+  });
+
+  const growthDates = Object.keys(allGrowth);
+  const growthDays = growthDates.filter(d => allGrowth[d]?.completed).length;
+
+  const p2 = purposeData.part2 || {};
+  const prioritiesSet = [p2.priority1, p2.priority2, p2.priority3].filter(p => p && p.trim().length > 0).length;
+
+  const entriesEl = document.getElementById('purpose-entries');
+  const streakEl = document.getElementById('purpose-streak');
+  const daysEl = document.getElementById('purpose-days');
+  const prioritiesEl = document.getElementById('purpose-priorities');
+
+  if (entriesEl) entriesEl.textContent = journalEntries;
+  if (streakEl) streakEl.textContent = calculatePurposeStreak();
+  if (daysEl) daysEl.textContent = growthDays;
+  if (prioritiesEl) prioritiesEl.textContent = prioritiesSet;
+}
+
+function checkStep9Completion() {
+  if (localStorage.getItem('step9CelebrationShown') === 'true') return;
+
+  const purposeData = loadPurposeData();
+  const allGrowth = getAllGrowthData();
+
+  const allPartsComplete = purposeParts.every(part => {
+    const pd = purposeData[part.key];
+    if (!pd) return false;
+    return part.prompts.every((_, i) => (pd['q' + (i + 1)] || '').trim().length > 5);
+  });
+
+  const hasGrowth = Object.values(allGrowth).some(d => d?.completed);
+
+  if (allPartsComplete && hasGrowth) {
+    localStorage.setItem('step9CelebrationShown', 'true');
+    triggerStep9Confetti();
+  }
+}
+
+function triggerStep9Confetti() {
+  if (typeof confetti === 'function') {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 4,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#8c9d7b', '#9bb087', '#D4AF37', '#1A1A1A']
+      });
+      confetti({
+        particleCount: 4,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#8c9d7b', '#9bb087', '#D4AF37', '#1A1A1A']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
+  }
+
+  showCelebration(
+    'Journey Complete!',
+    'You\'ve completed all 9 steps of the Burnout Rescue Roadmap. Your purpose is clear, your habits are strong, and your resilience is unshakable. This is just the beginning!'
+  );
+}
+
+// ============================================================================
+// PHASE 3 XP HELPER
+// ============================================================================
+
+function awardPhase3BonusXP(uniqueKey, amount) {
+  const storageKey = `phase3Bonus_${uniqueKey}`;
+  if (localStorage.getItem(storageKey)) return;
+  localStorage.setItem(storageKey, 'true');
+  addXP(amount, 'Milestone completed!');
 }
 
 // ============================================================================
@@ -2679,6 +3563,9 @@ window.addEventListener('load', () => {
   initMindsetTracker();
   initMovementTracker();
   initNutritionTracker();
+  initProductivityTracker();
+  initBoundaryTracker();
+  initPurposeTracker();
 
   // Update dashboard
   updateDashboard();
