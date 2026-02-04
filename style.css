@@ -274,8 +274,9 @@ h1,
 }
 
 .today-focus-card {
-  background: rgba(140, 157, 123, 0.08);
-  box-shadow: 0 2px 8px rgba(140, 157, 123, 0.15), 0 4px 16px rgba(0, 0, 0, 0.06);
+  background: rgba(140, 157, 123, 0.15);
+  box-shadow: 0 4px 12px rgba(140, 157, 123, 0.25), 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(140, 157, 123, 0.2);
 }
 
 .week-header {
