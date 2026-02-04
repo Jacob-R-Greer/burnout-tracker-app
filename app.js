@@ -247,6 +247,12 @@ function navigateToStep(step) {
 }
 
 function handleLockedStep(step) {
+  // Dev mode: navigate directly instead of blocking
+  const devMode = new URLSearchParams(window.location.search).get('dev') === '1';
+  if (devMode) {
+    navigateTo(step);
+    return;
+  }
   const xp = getUserXP();
   const remaining = Math.max(5000 - xp, 0);
   alert(`Reach Level 5 (${remaining} XP to go) to unlock this step!`);
@@ -2647,8 +2653,10 @@ function updateXPDisplay() {
 }
 
 function updatePhaseLocks() {
-  const phase2Unlocked = localStorage.getItem('phase2Unlocked') === 'true';
-  const phase3Unlocked = localStorage.getItem('phase3Unlocked') === 'true';
+  // Dev mode: add ?dev=1 to URL to unlock all phases for testing
+  const devMode = new URLSearchParams(window.location.search).get('dev') === '1';
+  const phase2Unlocked = devMode || localStorage.getItem('phase2Unlocked') === 'true';
+  const phase3Unlocked = devMode || localStorage.getItem('phase3Unlocked') === 'true';
 
   // Phase 2 lock
   const phase2Lock = document.getElementById('phase2-lock');
