@@ -273,6 +273,11 @@ h1,
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+.today-focus-card {
+  background: rgba(140, 157, 123, 0.08);
+  box-shadow: 0 2px 8px rgba(140, 157, 123, 0.15), 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
 .week-header {
   display: flex;
   justify-content: space-between;
