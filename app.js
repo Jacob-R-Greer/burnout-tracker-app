@@ -555,17 +555,64 @@ function updateTodaysFocus() {
       link: 'nutrition'
     });
   }
-  
+
+  // Phase 3 items — only show when unlocked
+  if (phase3Open) {
+    // Productivity — daily (check if matrix has tasks or environment done)
+    const prodData = loadProductivityDataForDate(todayKey);
+    const prodMatrixTasks = prodData.matrix ? Object.values(prodData.matrix).reduce((s, a) => s + a.length, 0) : 0;
+    const prodEnvChecked = (prodData.environment || []).filter(c => c).length;
+    const prodComplete = prodMatrixTasks > 0 && prodEnvChecked >= 3;
+    if (!prodComplete) {
+      focusItems.push({
+        step: prodMatrixTasks === 0 ? 'No tasks added yet' : `${prodEnvChecked}/5 environment checks`,
+        icon: 'target',
+        title: 'Plan your productivity',
+        link: 'productivity'
+      });
+    }
+
+    // Boundary — weekly (check if any boundary checked today)
+    const boundaryData = loadBoundaryData();
+    const todayDayIndex = (new Date().getDay() + 6) % 7; // Mon=0
+    const weekData = (boundaryData.weeks && boundaryData.weeks[currentBoundaryWeek]) || { boundaries: ['','',''], checks: [[],[],[]] };
+    const boundaryCheckedToday = [0,1,2].some(row => weekData.checks[row]?.[todayDayIndex]);
+    if (!boundaryCheckedToday) {
+      const totalBoundariesSet = weekData.boundaries.filter(b => b.trim()).length;
+      focusItems.push({
+        step: totalBoundariesSet === 0 ? 'Set your boundaries' : 'Not yet checked today',
+        icon: 'shield',
+        title: 'Check your daily boundaries',
+        link: 'boundary'
+      });
+    }
+
+    // Growth Tracker — daily (check if today's growth entry exists)
+    const growthData = loadGrowthDataForDate(todayKey);
+    const growthComplete = growthData.completed || false;
+    if (!growthComplete) {
+      focusItems.push({
+        step: 'Not yet logged today',
+        icon: 'sprout',
+        title: 'Log your growth practice',
+        link: 'purpose'
+      });
+    }
+  }
+
   // If everything is complete, show celebration with streak info
   if (focusItems.length === 0) {
     const streaks = [
       calculateSleepStreak(),
       calculateStressStreak(),
-      calculateEnergyStreak(),
-      calculateMindsetStreak(),
-      calculateMovementStreak(),
-      calculateNutritionStreak()
+      calculateEnergyStreak()
     ];
+    if (phase2Open) {
+      streaks.push(calculateMindsetStreak(), calculateMovementStreak(), calculateNutritionStreak());
+    }
+    if (phase3Open) {
+      streaks.push(calculateProductivityStreak(), calculateBoundaryStreak(), calculatePurposeStreak());
+    }
     const longestStreak = Math.max(...streaks, 0);
 
     container.innerHTML = `
