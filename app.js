@@ -215,11 +215,27 @@ function navigateCalendarMonth(currentDate, delta) {
 // ============================================================================
 
 function navigateToStep(step) {
+  const devMode = new URLSearchParams(window.location.search).get('dev') === '1';
+  const phase2Locked = !devMode && localStorage.getItem('phase2Unlocked') !== 'true';
+  const phase3Locked = !devMode && localStorage.getItem('phase3Unlocked') !== 'true';
+
+  const phase2Steps = ['mindset', 'movement', 'nutrition'];
+  const phase3Steps = ['productivity', 'boundary', 'purpose'];
+
+  if (phase2Locked && phase2Steps.includes(step)) {
+    handleLockedStep(step);
+    return;
+  }
+  if (phase3Locked && phase3Steps.includes(step)) {
+    handleLockedStep(step);
+    return;
+  }
+
   // Hide all sections
   document.querySelectorAll('.step-section').forEach(section => {
     section.classList.remove('active');
   });
-  
+
   // Show selected section
   const targetSection = document.getElementById(step + '-section');
   if (targetSection) {
@@ -250,12 +266,18 @@ function handleLockedStep(step) {
   // Dev mode: navigate directly instead of blocking
   const devMode = new URLSearchParams(window.location.search).get('dev') === '1';
   if (devMode) {
-    navigateTo(step);
+    navigateToStep(step);
     return;
   }
   const xp = getUserXP();
-  const remaining = Math.max(5000 - xp, 0);
-  alert(`Reach Level 5 (${remaining} XP to go) to unlock this step!`);
+  const phase2Steps = ['mindset', 'movement', 'nutrition'];
+  if (phase2Steps.includes(step)) {
+    const remaining = Math.max(100 - xp, 0);
+    alert(`Reach Level 2 (${remaining} XP to go) to unlock Phase 2!`);
+  } else {
+    const remaining = Math.max(5000 - xp, 0);
+    alert(`Reach Level 5 (${remaining} XP to go) to unlock Phase 3!`);
+  }
 }
 
 // Mobile menu toggle
@@ -439,31 +461,43 @@ function updateNavStreak(step, streak) {
 function updateTodaysFocus() {
   const container = document.getElementById('today-focus-items');
   if (!container) return;
-  
+
   const todayKey = getTodayKey();
   const focusItems = [];
-  
-  // Check actual completion status for TODAY
+
+  const devMode = new URLSearchParams(window.location.search).get('dev') === '1';
+  const phase2Open = devMode || localStorage.getItem('phase2Unlocked') === 'true';
+  const phase3Open = devMode || localStorage.getItem('phase3Unlocked') === 'true';
+
+  // Check actual completion status for TODAY — Phase 1 (always shown)
   const sleepData = loadSleepDataForDate(todayKey);
   const sleepComplete = (sleepData.checks?.filter(c => c).length || 0) >= 3;
-  
+
   const stressData = loadStressDataForDate(todayKey);
   const stressComplete = stressData.completed || false;
-  
+
   const energyData = loadEnergyDataForDate(todayKey);
   const energyComplete = (energyData.checks?.filter(c => c).length || 0) >= 2;
-  
-  const mindsetData = loadMindsetDataForDate(todayKey);
-  const mindsetComplete = mindsetData.situation && mindsetData.situation.trim() !== '';
-  
-  const movementData = loadMovementDataForDate(todayKey);
-  const movementComplete = movementData.type && movementData.type.trim() !== '';
-  
-  const nutritionData = loadNutritionDataForDate(todayKey);
-  const nutritionComplete = nutritionHabits.length > 0 && 
-    (nutritionData.checks?.filter(c => c).length || 0) >= nutritionHabits.length * 0.5;
-  
-  // Build suggestions for incomplete items - show specific habits due
+
+  // Phase 2 — only check if unlocked
+  let mindsetComplete = true;
+  let movementComplete = true;
+  let nutritionComplete = true;
+  let mindsetData, movementData, nutritionData;
+
+  if (phase2Open) {
+    mindsetData = loadMindsetDataForDate(todayKey);
+    mindsetComplete = mindsetData.situation && mindsetData.situation.trim() !== '';
+
+    movementData = loadMovementDataForDate(todayKey);
+    movementComplete = movementData.type && movementData.type.trim() !== '';
+
+    nutritionData = loadNutritionDataForDate(todayKey);
+    nutritionComplete = nutritionHabits.length > 0 &&
+      (nutritionData.checks?.filter(c => c).length || 0) >= nutritionHabits.length * 0.5;
+  }
+
+  // Build suggestions for incomplete items — Phase 1
   if (!sleepComplete) {
     const sleepChecked = sleepData.checks?.filter(c => c).length || 0;
     focusItems.push({
@@ -493,7 +527,8 @@ function updateTodaysFocus() {
     });
   }
 
-  if (!mindsetComplete) {
+  // Phase 2 items — only show when unlocked
+  if (phase2Open && !mindsetComplete) {
     focusItems.push({
       step: 'Journal not yet logged',
       icon: 'brain',
@@ -502,7 +537,7 @@ function updateTodaysFocus() {
     });
   }
 
-  if (!movementComplete) {
+  if (phase2Open && !movementComplete) {
     focusItems.push({
       step: 'Session not yet logged',
       icon: 'activity',
@@ -511,7 +546,7 @@ function updateTodaysFocus() {
     });
   }
 
-  if (!nutritionComplete && nutritionHabits.length > 0) {
+  if (phase2Open && !nutritionComplete && nutritionHabits.length > 0) {
     const nutrChecked = nutritionData.checks?.filter(c => c).length || 0;
     focusItems.push({
       step: `${nutrChecked}/${nutritionHabits.length} habits logged`,
