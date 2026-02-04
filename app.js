@@ -2758,12 +2758,16 @@ function loadProductivityDataForDate(dateKey) {
   try { return JSON.parse(saved)[dateKey] || {}; } catch (e) { return {}; }
 }
 
-function saveProductivityDataForDate(dateKey, data) {
+function saveProductivityDataForDate(dateKey, data, immediate) {
   let allData = {};
   const saved = localStorage.getItem('productivityDataByDate');
   if (saved) { try { allData = JSON.parse(saved); } catch (e) { allData = {}; } }
   allData[dateKey] = data;
-  autoSave('productivityDataByDate', JSON.stringify(allData));
+  if (immediate) {
+    localStorage.setItem('productivityDataByDate', JSON.stringify(allData));
+  } else {
+    autoSave('productivityDataByDate', JSON.stringify(allData));
+  }
 }
 
 function getAllProductivityData() {
@@ -2793,6 +2797,13 @@ function renderTodayProductivityTracker() {
   renderProductivityReflection(data);
 }
 
+const matrixXP = {
+  'urgent-important': 15,
+  'not-urgent-important': 10,
+  'urgent-not-important': 5,
+  'not-urgent-not-important': 3
+};
+
 function renderProductivityMatrix(data) {
   const container = document.getElementById('productivity-matrix');
   if (!container) return;
@@ -2805,24 +2816,28 @@ function renderProductivityMatrix(data) {
   };
 
   const quadrants = [
-    { key: 'urgent-important', title: 'Important & Urgent' },
-    { key: 'not-urgent-important', title: 'Important, Not Urgent' },
-    { key: 'urgent-not-important', title: 'Not Important, Urgent' },
-    { key: 'not-urgent-not-important', title: 'Not Important & Not Urgent' }
+    { key: 'urgent-important', title: 'Important & Urgent', xp: 15 },
+    { key: 'not-urgent-important', title: 'Important, Not Urgent', xp: 10 },
+    { key: 'urgent-not-important', title: 'Not Important, Urgent', xp: 5 },
+    { key: 'not-urgent-not-important', title: 'Not Important & Not Urgent', xp: 3 }
   ];
 
   container.innerHTML = `
     <div class="matrix-grid">
       ${quadrants.map(q => `
         <div class="matrix-quadrant">
-          <div class="matrix-quadrant-title">${q.title}</div>
+          <div class="matrix-quadrant-title">${q.title} <span class="matrix-xp-badge">+${q.xp} XP</span></div>
           <div class="matrix-tasks" id="matrix-tasks-${q.key}">
-            ${(matrix[q.key] || []).map((task, i) => `
-              <div class="matrix-task">
-                <span>${task}</span>
+            ${(matrix[q.key] || []).map((task, i) => {
+              const text = typeof task === 'string' ? task : task.text;
+              const done = typeof task === 'string' ? false : task.done;
+              return `
+              <div class="matrix-task ${done ? 'matrix-task-done' : ''}">
+                <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleMatrixTask('${q.key}', ${i})" class="matrix-task-check">
+                <span>${text}</span>
                 <button class="matrix-task-remove" onclick="removeMatrixTask('${q.key}', ${i})">&times;</button>
-              </div>
-            `).join('')}
+              </div>`;
+            }).join('')}
           </div>
           <div class="matrix-add-row">
             <input type="text" id="matrix-input-${q.key}" placeholder="Add task..." onkeydown="if(event.key==='Enter')addMatrixTask('${q.key}')">
@@ -2841,10 +2856,10 @@ function addMatrixTask(quadrant) {
   const todayKey = getTodayKey();
   const data = loadProductivityDataForDate(todayKey);
   if (!data.matrix) data.matrix = { 'urgent-important': [], 'not-urgent-important': [], 'urgent-not-important': [], 'not-urgent-not-important': [] };
-  data.matrix[quadrant].push(input.value.trim());
-  saveProductivityDataForDate(todayKey, data);
+  data.matrix[quadrant].push({ text: input.value.trim(), done: false });
+  saveProductivityDataForDate(todayKey, data, true);
   renderProductivityMatrix(data);
-  updateTodayProductivityTracker();
+  calculateProductivityStats();
 }
 
 function removeMatrixTask(quadrant, index) {
@@ -2852,10 +2867,39 @@ function removeMatrixTask(quadrant, index) {
   const data = loadProductivityDataForDate(todayKey);
   if (data.matrix && data.matrix[quadrant]) {
     data.matrix[quadrant].splice(index, 1);
-    saveProductivityDataForDate(todayKey, data);
+    saveProductivityDataForDate(todayKey, data, true);
     renderProductivityMatrix(data);
-    updateTodayProductivityTracker();
+    calculateProductivityStats();
   }
+}
+
+function toggleMatrixTask(quadrant, index) {
+  const todayKey = getTodayKey();
+  const data = loadProductivityDataForDate(todayKey);
+  if (!data.matrix || !data.matrix[quadrant]) return;
+
+  let task = data.matrix[quadrant][index];
+  // Migrate plain strings to object format
+  if (typeof task === 'string') {
+    task = { text: task, done: false };
+    data.matrix[quadrant][index] = task;
+  }
+
+  const wasCompleted = task.done;
+  task.done = !wasCompleted;
+  saveProductivityDataForDate(todayKey, data, true);
+  renderProductivityMatrix(data);
+
+  // Award XP when checking off (not when unchecking)
+  if (!wasCompleted) {
+    const xpKey = `matrixTask_${todayKey}_${quadrant}_${index}`;
+    if (!localStorage.getItem(xpKey)) {
+      localStorage.setItem(xpKey, 'true');
+      addXP(matrixXP[quadrant], 'Task completed!');
+    }
+  }
+
+  calculateProductivityStats();
 }
 
 function renderProductivityTimeBlocks(data) {
@@ -2975,10 +3019,18 @@ function calculateProductivityStats() {
   const dates = Object.keys(allData);
 
   let totalTasks = 0;
+  let completedTasks = 0;
   let deepWorkBlocks = 0;
   dates.forEach(date => {
     const d = allData[date];
-    if (d.matrix) totalTasks += Object.values(d.matrix).reduce((s, a) => s + a.length, 0);
+    if (d.matrix) {
+      Object.values(d.matrix).forEach(arr => {
+        arr.forEach(task => {
+          totalTasks++;
+          if (typeof task === 'object' && task.done) completedTasks++;
+        });
+      });
+    }
     if (d.timeBlocks) deepWorkBlocks += d.timeBlocks.filter((tb, i) => i < 2 && tb.completed).length;
   });
 
@@ -2988,7 +3040,7 @@ function calculateProductivityStats() {
   const daysEl = document.getElementById('productivity-days');
 
   if (streakEl) streakEl.textContent = calculateProductivityStreak();
-  if (tasksEl) tasksEl.textContent = totalTasks;
+  if (tasksEl) tasksEl.textContent = completedTasks + ' / ' + totalTasks;
   if (deepEl) deepEl.textContent = deepWorkBlocks;
   if (daysEl) daysEl.textContent = dates.length;
 }

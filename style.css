@@ -1450,6 +1450,26 @@ h1,
   color: #e74c3c;
 }
 
+.matrix-task-check {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--brand-sage);
+  flex-shrink: 0;
+}
+
+.matrix-task-done span {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.matrix-xp-badge {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--brand-sage);
+  opacity: 0.8;
+}
+
 .matrix-add-row {
   display: flex;
   gap: 8px;
